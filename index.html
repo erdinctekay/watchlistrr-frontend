@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- <meta
+			http-equiv="Content-Security-Policy"
+			content="default-src 'self'; style-src 'self' 'unsafe-inline'; 
+              script-src 'self' 'unsafe-inline' 'unsafe-eval' 'strict-dynamic'; 
+              img-src 'self' data:; frame-src 'self'; connect-src 'self'"
+		/> -->
+		<meta charset="UTF-8" />
+		<link rel="shortcut icon" href="/favicon-dark.ico" type="image/x-icon" />
+		<link rel="icon" href="/favicon-dark.ico" type="image/x-icon" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes" />
+		<title>watchlistrr</title>
+	</head>
+
+	<body id="app" class="body-initial-bg" spellcheck="false" style="opacity: 0">
+		<!-- to fix bg conflict on first load without cache -->
+		<style class="remove-after-init">
+			@media (prefers-color-scheme: dark) {
+				.body-initial-bg {
+					background-color: #212529;
+				}
+			}
+			@media (prefers-color-scheme: light) {
+				.body-initial-bg {
+					background-color: #f8f9fa;
+				}
+			}
+		</style>
+		<script type="module" src="./src/main.js"></script>
+	</body>
+</html>

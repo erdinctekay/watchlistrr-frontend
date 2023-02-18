@@ -31,6 +31,5 @@ coverage
 .env.test.local
 .env.production.local
 
-# Netlify Settings
-_headers
-_redirects
+._oldgit/*
+._oldgit

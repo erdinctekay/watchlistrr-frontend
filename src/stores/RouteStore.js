@@ -16,27 +16,31 @@ export const useRouteStore = defineStore('route', () => {
 	// sync tabs if target page restricted due to new auth state
 	const authChannel = new BroadcastChannel('auth')
 	authChannel.onmessage = ({ data }) => {
-		if (data.auth) {
-			// check if it needs not auth
-			if (currentPage.value.meta.requiresNotAuth) {
-				// to be sure reactive data updated
-				let interval = setInterval(() => {
-					if (useAuthStore().isAuthenticated) {
-						clearInterval(interval)
-						returnPage('home')
-					}
-				}, 100)
-			}
-		} else {
-			// check if it needs auth
-			if (currentPage.value.meta.requiresAuth) {
-				// to be sure reactive data updated
-				let interval = setInterval(() => {
-					if (!useAuthStore().isAuthenticated) {
-						clearInterval(interval)
-						returnPage('home')
-					}
-				}, 100)
+		// firts check if current page defined on vue-router
+		if (currentPage.value) {
+			// then handle
+			if (data.auth) {
+				// check if it needs not auth
+				if (currentPage.value.meta.requiresNotAuth) {
+					// to be sure reactive data updated
+					let interval = setInterval(() => {
+						if (useAuthStore().isAuthenticated) {
+							clearInterval(interval)
+							returnPage('home')
+						}
+					}, 100)
+				}
+			} else {
+				// check if it needs auth
+				if (currentPage.value.meta.requiresAuth) {
+					// to be sure reactive data updated
+					let interval = setInterval(() => {
+						if (!useAuthStore().isAuthenticated) {
+							clearInterval(interval)
+							returnPage('home')
+						}
+					}, 100)
+				}
 			}
 		}
 	}

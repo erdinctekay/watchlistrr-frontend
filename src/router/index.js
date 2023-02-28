@@ -35,35 +35,11 @@ const routes = [
 		},
 	},
 	{
-		path: '/register',
-		name: 'register',
-		component: () => import('@/views/Register.vue'),
-		meta: {
-			requiresNotAuth: true,
-		},
-	},
-	{
-		path: '/login',
-		name: 'login',
-		component: () => import('@/views/Login.vue'),
-		meta: {
-			requiresNotAuth: true,
-		},
-	},
-	{
-		path: '/logout',
-		name: 'logout',
-		component: () => import('@/views/Logout.vue'),
+		path: '/account',
+		name: 'account',
+		component: () => import('@/views/Account.vue'),
 		meta: {
 			requiresAuth: true,
-		},
-	},
-	{
-		path: '/forgot-password',
-		name: 'forgotPassword',
-		component: () => import('@/views/ForgotPassword.vue'),
-		meta: {
-			requiresNotAuth: true,
 		},
 	},
 	{
@@ -75,17 +51,41 @@ const routes = [
 		},
 	},
 	{
-		path: '/account',
-		name: 'account',
-		component: () => import('@/views/Account.vue'),
+		path: '/auth/register',
+		name: 'register',
+		component: () => import('@/views/auth/Register.vue'),
+		meta: {
+			requiresNotAuth: true,
+		},
+	},
+	{
+		path: '/auth/login',
+		name: 'login',
+		component: () => import('@/views/auth/Login.vue'),
+		meta: {
+			requiresNotAuth: true,
+		},
+	},
+	{
+		path: '/auth/logout',
+		name: 'logout',
+		component: () => import('@/views/auth/Logout.vue'),
 		meta: {
 			requiresAuth: true,
 		},
 	},
 	{
+		path: '/auth/forgot-password',
+		name: 'forgotPassword',
+		component: () => import('@/views/auth/ForgotPassword.vue'),
+		meta: {
+			requiresNotAuth: true,
+		},
+	},
+	{
 		path: '/__/auth/action',
 		name: 'firebaseAuthAction',
-		component: () => import('@/views/FirebaseAuthAction.vue'),
+		component: () => import('@/views/auth/FirebaseAuthAction.vue'),
 	},
 	{
 		path: '/:pathMatch(.*)*',
@@ -101,6 +101,9 @@ const router = createRouter({
 		return savedPosition || { top: 0 }
 	},
 })
+
+// to redirect auth related paths to auth/path
+const authPaths = ['login', 'logout', 'register', 'forgot-password']
 
 // restrict routes before enter
 router.beforeEach(async (to, from, next) => {
@@ -120,6 +123,13 @@ router.beforeEach(async (to, from, next) => {
 
 	if (to.meta.requiresAuth && !useAuthStore().isAuthenticated) {
 		return returnPage('home')
+	}
+
+	// redirect auth related paths to auth/path
+	/* should work before other controllers */
+	const path = to.path.replace('/', '')
+	if (authPaths.includes(path)) {
+		return returnPage(path)
 	}
 
 	next()

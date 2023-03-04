@@ -41,6 +41,16 @@
 				:style="'font-size: ' + afterIconSize + ';' + afterIconStyle"
 			></i>
 		</div>
+
+		<div class="d-inline-flex align-items-center flex-row" v-if="hasAfterImage">
+			<!-- prettier-ignore -->
+			<img
+				:class="afterImageClass"
+				:src="afterImageSource"
+				:height="afterImageHeight"
+				:style="afterImageStyle"
+			/>
+		</div>
 	</button>
 </template>
 <script setup>
@@ -144,6 +154,26 @@
 		dataBsToggle: {
 			type: String,
 			default: null,
+		},
+		hasAfterImage: {
+			type: Boolean,
+			default: false,
+		},
+		afterImageClass: {
+			type: String,
+			default: '',
+		},
+		afterImageSource: {
+			type: String,
+			default: '',
+		},
+		afterImageHeight: {
+			type: String,
+			default: '',
+		},
+		afterImageStyle: {
+			type: String,
+			default: '',
 		},
 	})
 

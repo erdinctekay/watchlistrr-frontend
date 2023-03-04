@@ -7,10 +7,11 @@ export const useRouteStore = defineStore('route', () => {
 	// core setup
 
 	const currentPage = ref('')
-	const { returnPage } = router
+	const { returnPage, newPageInformer } = router
 
 	const updateCurrentPage = (to) => {
 		currentPage.value = to
+		newPageInformer(to)
 	}
 
 	// sync tabs if target page restricted due to new auth state

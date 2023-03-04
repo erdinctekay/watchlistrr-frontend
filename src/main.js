@@ -4,8 +4,6 @@ import { createPinia } from 'pinia'
 import './style.css'
 import router from './router'
 
-import { Dropdown } from 'bootstrap'
-
 const pinia = createPinia()
 const app = createApp(App)
 

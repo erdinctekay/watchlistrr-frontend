@@ -1,15 +1,20 @@
 <template>
-	<the-page v-if="!isLoading" :thePageMountedCallback="thePageMounted"></the-page>
+	<the-page v-if="!isLoading" :thePageMountedCallback="isPageMounted"></the-page>
 </template>
 
 <script setup>
-	import { onMounted, onBeforeMount } from 'vue'
-	import { loadUiFunctions } from '@/helpers/ui'
-	import { useAuthStore } from '@/stores/AuthStore'
-	import { storeToRefs } from 'pinia'
 	import ThePage from '@/components/ThePage.vue'
 
+	import { onMounted, onBeforeMount, ref } from 'vue'
+	import { storeToRefs } from 'pinia'
+
+	import { useAuthStore } from '@/stores/AuthStore'
 	import { useColorSchemeStore } from '@/stores/ColorSchemeStore'
+
+	import { Popover } from 'bootstrap'
+	import { router } from '@/helpers'
+	import { loadUiFunctions, enablePopovers } from '@/helpers/ui'
+
 	const { colorScheme } = storeToRefs(useColorSchemeStore())
 
 	const body = document.querySelector('body')
@@ -32,13 +37,53 @@
 		// console.log('app mounted')
 	})
 
-	const thePageMounted = () => {
-		// initial delay with "0ms" setTimeout
-		setTimeout(() => {
+	// step by step contollers started
+	const { routerReadyCallback, pageChangedCallback } = router
+	const isRouterMounted = ref(false)
+	const isPageChanged = ref(false)
+
+	const isPageMounted = async () => {
+		// console.log('page mounted')
+
+		routerReadyCallback().then(async () => {
+			isRouterMounted.value = true
+			// console.log('router ready')
+		})
+
+		pageChangedCallback().then(() => {
+			isPageChanged.value = true
+			// console.log('page change ready')
+		})
+
+		// jobs to do when new page fully setted
+		const syncUi = () => {
 			document.documentElement.click() // to trigger some ui func
 			document.querySelector('body').style.opacity = '' // to show body (initial opacity was 0)
-		}, 0)
-		// console.log('page mounted')
+			enablePopovers(Popover) // detect popovers on new page
+
+			isRouterMounted.value = false
+			isPageChanged.value = false
+			// console.log('ui synced and router flag removed')
+		}
+
+		const isPageFullySet = async () => {
+			await new Promise((resolve) => {
+				if (isRouterMounted.value && isPageChanged.value) {
+					resolve()
+				} else {
+					const checkRouter = setInterval(() => {
+						if (isRouterMounted.value && isPageChanged.value) {
+							clearInterval(checkRouter)
+							resolve()
+						}
+					}, 100)
+				}
+			})
+		}
+
+		// update some ui functionality when everything is ready
+		await isPageFullySet()
+		syncUi()
 	}
 	/** callback from the page - ui funcs **/
 </script>

@@ -115,6 +115,24 @@ export const loadUiFunctions = () => {
 	executeDefaultUi()
 }
 
+export const enablePopovers = (Popover) => {
+	const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+	const popoverList = [...popoverTriggerList].map((popoverTriggerEl) => {
+		const container = popoverTriggerEl.getAttribute('data-bs-container')
+		if (!container) {
+			new Popover(popoverTriggerEl, {
+				container: popoverTriggerEl.parentNode,
+			})
+		} else {
+			new Popover(popoverTriggerEl, {
+				container: document.querySelector(container),
+			})
+		}
+	})
+	// console.log(popoverList)
+	return popoverList
+}
+
 const removeInitials = () => {
 	window.onload = function () {
 		var elements = document.querySelectorAll('.remove-after-init')
@@ -132,11 +150,11 @@ const favIconColorSchemeListener = () => {
 	function themeChange(event) {
 		if (event.matches) {
 			favicons.forEach((icon) => {
-				icon.setAttribute('href', 'favicon-dark.ico')
+				icon.setAttribute('href', '/favicon-dark.ico')
 			})
 		} else {
 			favicons.forEach((icon) => {
-				icon.setAttribute('href', 'favicon-light.ico')
+				icon.setAttribute('href', '/favicon-light.ico')
 			})
 		}
 	}

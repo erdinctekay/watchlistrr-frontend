@@ -24,31 +24,33 @@
 			</div>
 		</div>
 		<div class="col d-flex justify-content-end">
-			<div v-if="!isAuthenticated" class="d-flex">
-				<span class="align-self-center text-nowrap d-none d-md-block small me-2">
-					<router-link :to="{ name: 'register' }" class="text-decoration-none h-100"> Register </router-link>
-					<span class="px-2">or</span>
-				</span>
-				<button-constructor
-					@click="returnPage('login')"
-					:mainColor="'secondary'"
-					:mainClass="'rounded-pill py-1'"
-					:textClass="'small uppercase-first-letter'"
-				>
-					Login
-				</button-constructor>
+			<div class="d-flex flex-row align-items-center">
+				<div v-if="!isAuthenticated" class="d-flex">
+					<span class="align-self-center text-nowrap d-none d-md-block small me-2">
+						<router-link :to="{ name: 'register' }" class="text-decoration-none h-100"> Register </router-link>
+						<span class="px-2">or</span>
+					</span>
+					<button-constructor
+						@click="returnPage('login')"
+						:mainColor="'secondary'"
+						:mainClass="'rounded-pill py-1'"
+						:textClass="'small uppercase-first-letter'"
+					>
+						Login
+					</button-constructor>
+				</div>
+				<account-dropdown v-else :colorScheme="colorScheme" :userCredentials="userCredentials" />
 			</div>
-			<account-dropdown v-else :colorScheme="colorScheme" :userCredentials="userCredentials" />
 			<divider-constructor :mainClass="'border-1 border-start mx-3 my-1'" />
 			<button-constructor
 				@click="toggleColorScheme()"
 				:mainColor="'standart'"
-				:mainClass="'px-2 py-1 rounded-pill'"
+				:mainClass="'px-2 py-1 rounded-pill square square-none-md'"
 				:hasMainIcon="true"
 				:mainIcon="`${colorScheme === 'light' ? 'brightness-high' : 'moon-fill'}`"
 				:mainIconClass="'mx-0 mx-md-1'"
 				:mainIconSize="'.9rem'"
-				:mainIconStyle="'padding: 0 2px;'"
+				:mainIconStyle="'padding: 0 0px;'"
 				:textClass="'d-none d-md-block small uppercase-first-letter'"
 				:textStyle="'min-width:2rem; max-width:2rem;'"
 			>

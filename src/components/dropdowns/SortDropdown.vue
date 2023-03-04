@@ -1,24 +1,22 @@
 <template>
-	<div class="dropdown d-flex justify-content-center">
+	<div class="dropdown dropdown-start d-flex justify-content-start">
 		<button-constructor
 			:mainColor="'standart'"
 			:mainClass="'rounded-pill px-3 border-transparent border-2 hover-highlight-icon'"
-			:textClass="'uppercase-first-letter ms-0'"
+			:textClass="'uppercase-first-letter ms-0 small'"
 			:hasMainIcon="true"
-			:mainIcon="`${selectedSortOrderIcon}`"
-			:mainIconClass="'pe-2 ps-1 icon-opacity-100'"
-			:mainIconSize="'1.1rem'"
+			:mainIcon="`sort-${selectedSortOrderIcon}`"
+			:mainIconClass="'me-n1 icon-opacity-100'"
+			:mainIconSize="'1.15rem'"
 			:mainIconStyle="'transform:translateY(1px);'"
 			:hasAfterIcon="true"
 			:afterIcon="`caret-down-fill`"
 			:afterIconClass="'text-body filled-icon'"
 			:afterIconSize="'1rem'"
 			:afterIconStyle="'transform:translateY(1px);'"
-			:afterIconOffset="'140px'"
 			:dataBsToggle="'dropdown'"
 			:ariaExpanded="false"
 		>
-			{{ selectedFilterType }}
 		</button-constructor>
 		<dropdown-constructor :dropdownObject="selectedDropdownObject.value" :colorScheme="colorScheme" />
 	</div>
@@ -58,7 +56,7 @@
 			case currentPage.value.name === 'home':
 				selectedDropdownObject.value = listDropdownObject
 				selectedFilterType.value = sortFilterListItems.find((item) => item.name === activeSortOptions.value.sortFilterList.split(' ')[0])?.label
-				selectedSortOrderIcon.value = sortOrderItems.find((item) => item.name === activeSortOptions.value.sortFilterList.split(' ')[1])?.mainIcon
+				selectedSortOrderIcon.value = sortOrderItems.find((item) => item.name === activeSortOptions.value.sortFilterList.split(' ')[1])?.mainIcon.split('arrow-')[1]
 
 				sortOrderAction = (item) => changeSortOptions('sortFilterList', activeSortOptions.value.sortFilterList.split(' ')[0] + ' ' + item.name)
 				findActiveSortOrder = (item) => {
@@ -69,7 +67,7 @@
 			case currentPage.value.name === 'watchlist.show':
 				selectedDropdownObject.value = moviesDropdownObject
 				selectedFilterType.value = sortFilterMovieItems.find((item) => item.name === activeSortOptions.value.sortFilterMovie.split(' ')[0])?.label
-				selectedSortOrderIcon.value = sortOrderItems.find((item) => item.name === activeSortOptions.value.sortFilterMovie.split(' ')[1])?.mainIcon
+				selectedSortOrderIcon.value = sortOrderItems.find((item) => item.name === activeSortOptions.value.sortFilterMovie.split(' ')[1])?.mainIcon.split('arrow-')[1]
 
 				sortOrderAction = (item) => changeSortOptions('sortFilterMovie', activeSortOptions.value.sortFilterMovie.split(' ')[0] + ' ' + item.name)
 				findActiveSortOrder = (item) => {

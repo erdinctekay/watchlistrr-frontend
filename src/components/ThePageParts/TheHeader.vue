@@ -8,8 +8,8 @@
 				<div class="container-fluid container-fluid-xxl py-2 px-3 px-sm-5 row g-0 m-auto">
 					<div class="d-flex flex-column w-100">
 						<header-main-row
-							v-if="isRouterMounted && currentPage"
-							:currentPage="currentPage"
+							v-if="currentPage"
+							:currentPage="currentPage || {}"
 							:colorScheme="colorScheme"
 							:toggleColorScheme="toggleColorScheme"
 							:returnPage="returnPage"
@@ -17,8 +17,11 @@
 							:userCredentials="userCredentials || {}"
 						></header-main-row>
 						<header-sorting-row
-							v-if="isRouterMounted && currentPage.meta.requiresSorting"
+							v-if="currentPage && currentPage?.meta.requiresSorting"
 							:colorScheme="colorScheme"
+							:currentPage="currentPage || {}"
+							:userCredentials="userCredentials || {}"
+							:isAuthenticated="isAuthenticated"
 						></header-sorting-row>
 					</div>
 				</div>
@@ -28,8 +31,8 @@
 </template>
 
 <script setup>
-	import HeaderMainRow from '@/components/headerParts/HeaderMainRow.vue'
-	import HeaderSortingRow from '@/components/headerParts/HeaderSortingRow.vue'
+	import HeaderMainRow from '@/components/headerParts/rows/HeaderMainRow.vue'
+	import HeaderSortingRow from '@/components/headerParts/rows/HeaderSortingRow.vue'
 
 	import { router } from '@/helpers'
 
@@ -38,7 +41,7 @@
 	import { useColorSchemeStore } from '@/stores/ColorSchemeStore'
 
 	import { storeToRefs } from 'pinia'
-	import { ref, onUpdated } from 'vue'
+	import { onUpdated } from 'vue'
 
 	const { isAuthenticated, userCredentials } = storeToRefs(useAuthStore())
 
@@ -47,12 +50,7 @@
 
 	const { currentPage } = storeToRefs(useRouteStore())
 
-	const { returnPage, isRouterReady } = router
-	const isRouterMounted = ref(false)
-
-	isRouterReady().then(() => {
-		isRouterMounted.value = true
-	})
+	const { returnPage } = router
 
 	onUpdated(() => {
 		document.documentElement.click() // to trigger some ui func about header

@@ -6,6 +6,7 @@
 // 2. Include any default variable overrides here
 
 $gray-200: #eef1f4;
+$enable-negative-margins: true;
 
 // 3. Include remainder of required Bootstrap stylesheets
 @import "../../../node_modules/bootstrap/scss/variables";

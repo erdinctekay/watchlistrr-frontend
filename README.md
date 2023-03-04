@@ -16,9 +16,9 @@ The watchlistrr app is built with using the following technologies:
 - Vite
 - Vue 3 - <i>Composition API / <script setup></i>
 - Pinia
-- Bootstrap 5
-- Firebase Authentication
 - Vue Router
+- Firebase Authentication
+- Bootstrap 5
 
 ## Contributing
 

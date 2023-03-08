@@ -97,16 +97,20 @@
 
 	const sortFilterMovieItems = [
 		{
-			label: 'Name',
-			name: 'name',
+			label: 'Name / Title',
+			name: 'movie.title',
 		},
 		{
 			label: 'Year',
-			name: 'year',
+			name: 'movie.year',
 		},
 		{
 			label: 'Runtime',
-			name: 'runtime',
+			name: 'movie.runtime',
+		},
+		{
+			label: 'Popularity',
+			name: 'movie.popularity',
 		},
 		// {
 		// 	label: 'Season',
@@ -119,16 +123,16 @@
 		// 	name: 'name',
 		// },
 		{
-			label: 'Likes',
-			name: 'likes',
+			label: 'Favorites',
+			name: 'favCount',
 		},
 		{
 			label: 'Followers',
-			name: 'followers',
+			name: 'followCount',
 		},
 		// {
 		// 	label: 'Total Movies',
-		// 	name: 'totalMovies',
+		// 	name: 'moviesCount',
 		// },
 		{
 			label: 'Date Created',
@@ -142,13 +146,13 @@
 	const sortOrderItems = [
 		{
 			label: 'Ascending',
-			name: 'ascending',
+			name: 'asc',
 			mainIcon: 'arrow-up',
 			// rest of the settings setted on defaults
 		},
 		{
 			label: 'Descending',
-			name: 'descending',
+			name: 'desc',
 			mainIcon: 'arrow-down',
 		},
 	]
@@ -176,6 +180,7 @@
 			}),
 		})),
 	}
+
 	const sortFilterList = {
 		defaults: {
 			groupName: `Sort Filter:`,

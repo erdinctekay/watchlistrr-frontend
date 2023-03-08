@@ -1,7 +1,7 @@
 <template>
 	<!-- prettier-ignore-attribute class -->
 	<button
-		@click.prevent="buttonClick"
+		@click.prevent.stop="buttonClick"
 		:type="buttonType"
 		class="btn d-flex flex-row align-items-center"
 		:class="`${mainClass} ${mainColor !== '' ? `btn-${mainColor}` : ''}`"

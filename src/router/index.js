@@ -2,14 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/AuthStore'
 import { useRouteStore } from '@/stores/RouteStore'
 
-// pages
-import Home from '../views/Home.vue'
+import { watchlist } from '@/services/backend'
 
 const routes = [
 	{
 		path: '/',
 		name: 'home',
-		component: Home,
+		component: () => import('@/views/Home.vue'),
 		meta: {
 			requiresSorting: true,
 		},
@@ -18,13 +17,12 @@ const routes = [
 		path: '/watchlist/:id',
 		name: 'watchlist.show',
 		component: () => import('@/views/WatchlistShow.vue'),
-		beforeEnter(to, from) {
-			const exist = true // await fetch
+		async beforeEnter(to, from) {
+			const response = await watchlist.get(to.params.id)
 
-			if (!exist)
+			if (!response.ok)
 				return {
 					name: '404',
-					// keep the url same
 					params: { pathMatch: to.path.split('/').slice(1) },
 					query: to.query,
 					hash: to.hash,

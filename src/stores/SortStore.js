@@ -11,8 +11,8 @@ export const useSortStore = defineStore('sort', () => {
 
 	// defaults
 	const sortDefaults = {
-		sortFilterList: 'updatedAt descending',
-		sortFilterMovie: 'name descending',
+		sortFilterList: 'updatedAt desc',
+		sortFilterMovie: 'movie.title desc',
 	}
 
 	const changeSortOptions = async (type, value) => {

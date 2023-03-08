@@ -1,7 +1,8 @@
 import router from '@/router'
 
-export const returnPage = (page) => {
-	router.push({ name: page })
+export const returnPage = (pageName, id) => {
+	if (id) return router.push({ name: pageName, params: { id: id } })
+	router.push({ name: pageName })
 }
 
 export const routerReadyCallback = async () => {

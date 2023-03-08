@@ -351,6 +351,7 @@ input:-ms-input-placeholder {
 :root {
 	--container-padding: 1.5rem;
 	--zoom-ratio: 1;
+	user-select: none;
 }
 
 html {

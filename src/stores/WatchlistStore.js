@@ -14,11 +14,11 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 	const limit = 1
 	const sortFilter = computed(() => activeSortOptions.sortFilterList.split(' ')[0])
 	const sortOrder = computed(() => activeSortOptions.sortFilterList.split(' ')[1])
-	const lastPage = ref()
+	const lastPage = ref(null)
 
 	const getWatchlists = async () => {
 		try {
-			if (lastPage.value <= page.value) return
+			if (lastPage.value && lastPage.value <= page.value) return
 
 			page.value++
 			const response = await watchlist.getAll(sortFilter.value, sortOrder.value, page.value, limit)
@@ -40,5 +40,11 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 		}
 	}
 
-	return { watchlists, getWatchlists }
+	const clearWathclistData = () => {
+		watchlists.data = []
+		page.value = 0
+		lastPage.value = null
+	}
+
+	return { watchlists, getWatchlists, clearWathclistData }
 })

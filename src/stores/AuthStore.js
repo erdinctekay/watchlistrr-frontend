@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed, onBeforeMount } from 'vue'
+import { ref, computed, onBeforeMount, watch } from 'vue'
 import { router } from '@/helpers'
 import { auth } from '@/services/firebase'
 import {
@@ -10,10 +10,12 @@ import {
 	updateProfile,
 } from 'firebase/auth'
 
+import { useWatchlistStore } from '@/stores/WatchlistStore'
+
 export const useAuthStore = defineStore('auth', () => {
 	// core setup
 
-	const currentUser = ref('')
+	const currentUser = ref(null)
 	const { returnPage } = router
 
 	const login = async ({ email, password }) => {
@@ -75,6 +77,14 @@ export const useAuthStore = defineStore('auth', () => {
 	const userCredentials = computed(() => currentUser.value)
 
 	/* getters end */
+
+	/* to do when auth status change */
+	const { clearWathclistData } = useWatchlistStore()
+
+	watch(isAuthenticated, (newValue, oldValue) => {
+		if (newValue !== oldValue) return clearWathclistData()
+	})
+	/* to do when auth status change */
 
 	return { login, register, logout, fetchUser, isAuthenticated, userCredentials, isFetching }
 })

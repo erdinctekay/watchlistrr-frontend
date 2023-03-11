@@ -1,5 +1,5 @@
 <template>
-	<div class="d-flex flex-row flex-nowrap justify-content-between">
+	<div class="d-flex flex-row flex-nowrap justify-content-between" style="min-height: 45px">
 		<div class="btn-group me-3 me-md-0" role="group">
 			<control-dropdown
 				v-if="isAuthorized"
@@ -33,7 +33,7 @@
 						class="watchlist-name text-body fw-bold"
 						style="text-overflow: ellipsis; overflow: hidden; white-space: pre"
 					>
-						{{ isHomePage ? 'Watchlists' : 'A cool watchlist' }}
+						{{ isHomePage ? 'Watchlists' : currentWatchlist?.title }}
 					</span>
 					<span
 						v-if="!isHomePage"
@@ -48,7 +48,9 @@
 						"
 					>
 						<i class="">by </i>
-						<a class="hover-highlight-button text-body cursor-pointer text-decoration-underline">Full Name </a>
+						<a class="hover-highlight-button text-body cursor-pointer text-decoration-underline"
+							>{{ currentWatchlist?.user.displayName }}
+						</a>
 					</span>
 					<span
 						v-else
@@ -73,31 +75,24 @@
 
 		<div class="action-buttons d-flex flex-row align-items-center me-1 me-md-0">
 			<div v-if="!isAuthorized && !isHomePage" class="d-flex flex-row">
-				<button-constructor
-					:mainColor="'transparent'"
-					:mainClass="'rounded-pill square hover-highlight-icon border-0 p-0 me-3 text-light'"
-					:hasMainIcon="true"
-					:mainIcon="'star'"
-					:mainIconClass="'me-0'"
-					:mainIconStyle="'transform: translateY(-1px)'"
-					:mainIconSize="'1.275rem'"
-					:textClass="'d-none'"
-				>
-				</button-constructor>
-
-				<button-constructor
-					:mainColor="'transparent'"
-					:mainClass="'rounded-pill square hover-highlight-icon border-0 p-0 me-3 text-light'"
-					:hasMainIcon="true"
-					:mainIcon="'plus-circle'"
-					:mainIconClass="'me-0'"
-					:mainIconSize="'1.25rem'"
-					:textClass="'d-none'"
-				>
-				</button-constructor>
+				<interaction-buttons-constructor :type="'watchlist'" />
 			</div>
 			<div v-else class="d-flex flex-row">
 				<button-constructor
+					v-if="isHomePage"
+					@click="openModal('addWatchlist')"
+					:mainColor="'primary'"
+					:mainClass="'rounded-pill px-2 p-1 my-1 text-light'"
+					:hasMainIcon="true"
+					:mainIcon="'plus-lg'"
+					:mainIconClass="'me-0'"
+					:textClass="'small'"
+				>
+					Add New
+				</button-constructor>
+				<button-constructor
+					v-else
+					@click="openModal('addMovie')"
 					:mainColor="'primary'"
 					:mainClass="'rounded-pill px-2 p-1 my-1 text-light'"
 					:hasMainIcon="true"
@@ -110,16 +105,22 @@
 			</div>
 		</div>
 	</div>
-	<!-- <div class="d-flex flex-row flex-nowrap justify-content-between">
-		<div class="col-12">{{ isAuthorized }}</div>
-	</div> -->
 </template>
 <script setup>
-	import ControlDropdown from '@/components/dropdowns/ControlDropdown.vue'
 	import ButtonConstructor from '@/components/constructors/ButtonConstructor.vue'
 	import DividerConstructor from '@/components/constructors/DividerConstructor.vue'
+	import InteractionButtonsConstructor from '@/components/constructors/InteractionButtonsConstructor.vue'
+	import ControlDropdown from '@/components/dropdowns/ControlDropdown.vue'
 
-	import { onMounted, onUpdated, computed } from 'vue'
+	import { onMounted, onUpdated, computed, ref, watchEffect, onBeforeUnmount } from 'vue'
+	import { storeToRefs } from 'pinia'
+
+	import { useMovieStore } from '@/stores/MovieStore'
+	import { useModalStore } from '@/stores/ModalStore'
+
+	const { openModal } = useModalStore()
+
+	const { currentWatchlist, routerWatchlistId } = storeToRefs(useMovieStore())
 
 	const props = defineProps({
 		colorScheme: {
@@ -138,10 +139,6 @@
 			type: Object,
 			required: true,
 		},
-		dataParent: {
-			type: Object,
-			default: {},
-		},
 	})
 
 	const isHomePage = computed(() => {
@@ -153,7 +150,10 @@
 	const isAuthorized = computed(() => {
 		if (!props.isAuthenticated) return false
 
-		return props.dataParent.userId === props.userCredentials.uid
+		const isOwner = currentWatchlist.value?.userId === props.userCredentials.uid
+		const isWatchlistPage = props.currentPage.name === 'watchlist.show'
+
+		return isWatchlistPage ? isOwner : false
 	})
 
 	onMounted(() => {
@@ -163,6 +163,10 @@
 	onUpdated(() => {
 		controlTextOverflow()
 	})
+
+	// onBeforeUnmount(() => {
+	// 	isAuthorized.value = null
+	// })
 
 	// control margin-end due to ellipsis
 	const controlTextOverflow = () => {

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { reactive, ref, toRaw, computed } from 'vue'
 
 import { movie } from '@/services/backend/'
+import { watchlist } from '@/services/backend'
 
 import { useSortStore } from '@/stores/SortStore'
 
@@ -17,10 +18,14 @@ export const useMovieStore = defineStore('movie', () => {
 	const lastPage = ref(null)
 	const routerWatchlistId = ref()
 
+	// to send all data bout current watchlist to other components like header etc.
+	const currentWatchlist = ref(null)
+
 	const getWatchlistMovies = async () => {
 		try {
-			console.log(movies.watchlistId)
+			// console.log(movies.watchlistId)
 
+			if (currentWatchlist.value.moviesCount === 0) return
 			if (lastPage.value && lastPage.value <= page.value) return
 
 			page.value++
@@ -44,16 +49,23 @@ export const useMovieStore = defineStore('movie', () => {
 		}
 	}
 
-	const changeWatchlistId = (id) => {
-		// get new watchlist id from router
-		routerWatchlistId.value = id
-
-		// reset all
+	const clearMovieData = () => {
 		movies.data = []
-		movies.watchlistId = routerWatchlistId.value
 		page.value = 0
 		lastPage.value = null
 	}
 
-	return { movies, getWatchlistMovies, changeWatchlistId, routerWatchlistId }
+	const changeWatchlistId = async (id) => {
+		// get new watchlist id from router
+		const response = await watchlist.get(id)
+		const data = await response.json()
+		currentWatchlist.value = response.ok ? data : null
+		routerWatchlistId.value = id
+
+		// reset all
+		clearMovieData()
+		movies.watchlistId = routerWatchlistId.value
+	}
+
+	return { movies, getWatchlistMovies, changeWatchlistId, routerWatchlistId, currentWatchlist }
 })

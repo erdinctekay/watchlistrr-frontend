@@ -1,7 +1,13 @@
 import router from '@/router'
+import { useMovieStore } from '@/stores/MovieStore'
 
 export const returnPage = (pageName, id) => {
-	if (id) return router.push({ name: pageName, params: { id: id } })
+	if (id) {
+		const { changeWatchlistId } = useMovieStore()
+		changeWatchlistId(id)
+
+		return router.push({ name: pageName, params: { id: id } })
+	}
 	router.push({ name: pageName })
 }
 

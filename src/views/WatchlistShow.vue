@@ -25,13 +25,16 @@
 	import { useMovieStore } from '@/stores/MovieStore'
 	import { useRouteStore } from '@/stores/RouteStore'
 
-	const { getWatchlistMovies, changeWatchlistId } = useMovieStore()
+	const { getWatchlistMovies, changeWatchlistId, currentWatchlist } = useMovieStore()
 	const { movies } = storeToRefs(useMovieStore())
 
 	onBeforeMount(() => {
-		// set watchlist id to store
-		const { currentPage } = useRouteStore()
-		changeWatchlistId(currentPage.params.id)
+		// if initial load made on this page - otherwise route helper takes care
+		if (!currentWatchlist) {
+			// set watchlist id to store
+			const { currentPage } = useRouteStore()
+			changeWatchlistId(currentPage.params.id)
+		}
 	})
 </script>
 

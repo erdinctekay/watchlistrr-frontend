@@ -1,6 +1,6 @@
 <template>
 	<card-constructor type="movie" :item="item" :userCredentials="userCredentials || {}" :colorScheme="colorScheme">
-		<template #additional-area>
+		<template #after-title>
 			<div class="pt-3 d-flex justify-content-start align-items-end text-muted">
 				<span class="small fst-italic">
 					{{ item.year }}
@@ -49,6 +49,10 @@
 			required: true,
 		},
 		addedBy: {
+			type: String,
+			required: true,
+		},
+		dateAdded: {
 			type: String,
 			required: true,
 		},

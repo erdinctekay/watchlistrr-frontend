@@ -1,6 +1,12 @@
 <template>
-	<card-constructor type="watchlist" :item="item" :userCredentials="userCredentials || {}" :colorScheme="colorScheme">
-		<template #additional-area>
+	<card-constructor
+		type="watchlist"
+		:item="item"
+		:userCredentials="userCredentials || {}"
+		:colorScheme="colorScheme"
+		:isAuthorized="isAuthorized"
+	>
+		<template #after-title>
 			<div class="py-2 pt-1 d-flex justify-content-start align-items-end text-muted">
 				<span class="small fst-italic">
 					{{ formatCount(item.moviesCount, 'movie') }}
@@ -13,13 +19,19 @@
 
 			<div class="py-3 d-flex justify-content-start align-items-end text-muted">
 				<span class="small fst-italic fw-bold" style="height: 50px">
-					<span v-if="item.highlightedMovies.length > 0" v-for="(movie, index) in item.highlightedMovies">
-						<span> {{ movie.title }} </span>
-						<span v-if="index !== item.highlightedMovies.length - 1">, </span>
-						<span v-else class="fst-normal fw-normal"> and more...</span>
-					</span>
-					<!-- -->
-					<span v-else class="fst-normal fw-normal"> No movies have been added to this watchlist yet. </span>
+					<!-- if there is movies -->
+					<template v-if="item.highlightedMovies.length > 0">
+						<template v-for="(movie, index) in item.highlightedMovies.slice(0, 5)">
+							<span>{{ movie.title }}</span>
+							<template v-if="index !== 4 && index !== item.highlightedMovies.length - 1">,&nbsp</template>
+						</template>
+						<span v-if="item.highlightedMovies.length > 5"> and more...</span>
+					</template>
+
+					<!-- if there is no movies -->
+					<template v-else>
+						<span class="fst-normal fw-normal">No movies have been added to this watchlist yet.</span>
+					</template>
 				</span>
 			</div>
 
@@ -32,6 +44,7 @@
 				</div> -->
 
 				<button-constructor
+					@click="returnPage('userWatchlists.show', item.user.id)"
 					:mainColor="'transparent'"
 					:mainClass="'rounded-pill py-0 p-0 hover-highlight-button text-body border-transparent border-2'"
 					:textClass="'small uppercase-first-letter ms-0'"
@@ -65,11 +78,15 @@
 	import CardConstructor from '@/components/constructors/CardConstructor.vue'
 
 	import { utils } from '@/helpers'
+	import { router } from '@/helpers'
 
 	import { storeToRefs } from 'pinia'
+	import { computed } from 'vue'
 
 	import { useAuthStore } from '@/stores/AuthStore'
 	import { useColorSchemeStore } from '@/stores/ColorSchemeStore'
+
+	const { returnPage } = router
 
 	const props = defineProps({
 		item: {
@@ -78,8 +95,16 @@
 		},
 	})
 
-	const { userCredentials } = storeToRefs(useAuthStore())
+	const { userCredentials, isAuthenticated } = storeToRefs(useAuthStore())
 	const { colorScheme } = storeToRefs(useColorSchemeStore())
 
 	const { formatCount } = utils
+
+	const isAuthorized = computed(() => {
+		if (!isAuthenticated.value) return false
+
+		const isOwner = props.item.userId === userCredentials.value.uid
+
+		return isOwner
+	})
 </script>

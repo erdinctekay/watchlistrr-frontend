@@ -3,10 +3,15 @@ import { useAuthStore } from '@/stores/AuthStore'
 import { useRouteStore } from '@/stores/RouteStore'
 
 import { watchlist } from '@/services/backend'
+import { user } from '@/services/backend'
 
 const routes = [
 	{
 		path: '/',
+		redirect: { name: 'home' }, // redirect to the 'home'
+	},
+	{
+		path: '/watchlists',
 		name: 'home',
 		component: () => import('@/views/Home.vue'),
 		meta: {
@@ -14,19 +19,42 @@ const routes = [
 		},
 	},
 	{
+		/* for watchlist with id */
+		path: '/watchlists/:id',
+		name: 'userWatchlists.show',
+		component: () => import('@/views/UserWatchlistsShow.vue'),
+		async beforeEnter(to, from) {
+			const response = await user.get(to.params.id)
+
+			const embeded404 = {
+				name: '404',
+				params: { pathMatch: to.path.split('/').slice(1) },
+				query: to.query,
+				hash: to.hash,
+			}
+
+			if (!response.ok) return embeded404
+		},
+		meta: {
+			requiresSorting: true,
+		},
+	},
+	{
+		/* for watchlist with id */
 		path: '/watchlist/:id',
-		name: 'watchlist.show',
-		component: () => import('@/views/WatchlistShow.vue'),
+		name: 'watchlistMovies.show',
+		component: () => import('@/views/WatchlistMoviesShow.vue'),
 		async beforeEnter(to, from) {
 			const response = await watchlist.get(to.params.id)
 
-			if (!response.ok)
-				return {
-					name: '404',
-					params: { pathMatch: to.path.split('/').slice(1) },
-					query: to.query,
-					hash: to.hash,
-				}
+			const embeded404 = {
+				name: '404',
+				params: { pathMatch: to.path.split('/').slice(1) },
+				query: to.query,
+				hash: to.hash,
+			}
+
+			if (!response.ok) return embeded404
 		},
 		meta: {
 			requiresSorting: true,

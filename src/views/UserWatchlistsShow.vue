@@ -10,7 +10,7 @@
 				class="cursor-pointer"
 			/>
 			<div class="d-flex flex-row justify-content-center w-100">
-				<button @click="getWatchlists('all')" class="btn btn-primary w-25 fw-bold">LOAD MORE</button>
+				<button @click="getWatchlists(currentPage.params.id)" class="btn btn-primary w-25 fw-bold">LOAD MORE</button>
 			</div>
 		</div>
 	</section>
@@ -25,17 +25,20 @@
 	import { router } from '@/helpers/'
 
 	import { useWatchlistStore } from '@/stores/WatchlistStore'
+	import { useRouteStore } from '@/stores/RouteStore'
 
 	const { returnPage } = router
 
 	const { getWatchlists, changeWatchlistsBy } = useWatchlistStore()
 	const { watchlists, currentWatchlistsBy } = storeToRefs(useWatchlistStore())
 
+	const { currentPage } = useRouteStore()
+
 	onBeforeMount(() => {
 		// if initial load made on this page - otherwise route helper takes care
-		if (!currentWatchlistsBy.value || currentWatchlistsBy.value !== 'all') {
+		if (!currentWatchlistsBy.value || currentWatchlistsBy.value === 'all') {
 			// set watchlist id to store
-			changeWatchlistsBy('all')
+			changeWatchlistsBy(currentPage.params.id)
 		}
 	})
 </script>

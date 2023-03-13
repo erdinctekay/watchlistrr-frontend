@@ -5,6 +5,7 @@
 			<movie-card
 				v-for="item in movies.data"
 				:item="item.movie"
+				:dateAdded="item.createdAt"
 				:addedBy="item.userId"
 				:key="item.movie.id"
 				class="cursor-pointer"

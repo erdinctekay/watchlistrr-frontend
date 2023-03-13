@@ -53,7 +53,7 @@
 	const selectDropdown = () => {
 
 		switch (true) {
-			case currentPage.value.name === 'home':
+			case currentPage.value.name === 'home' || currentPage.value.name === 'userWatchlists.show':
 				selectedDropdownObject.value = listDropdownObject
 				selectedFilterType.value = sortFilterListItems.find((item) => item.name === activeSortOptions.value.sortFilterList.split(' ')[0])?.label
 				selectedSortOrderIcon.value = sortOrderItems.find((item) => item.name === activeSortOptions.value.sortFilterList.split(' ')[1])?.mainIcon.split('arrow-')[1]
@@ -64,7 +64,7 @@
 				}
 				break
 
-			case currentPage.value.name === 'watchlist.show':
+			case currentPage.value.name === 'watchlistMovies.show':
 				selectedDropdownObject.value = moviesDropdownObject
 				selectedFilterType.value = sortFilterMovieItems.find((item) => item.name === activeSortOptions.value.sortFilterMovie.split(' ')[0])?.label
 				selectedSortOrderIcon.value = sortOrderItems.find((item) => item.name === activeSortOptions.value.sortFilterMovie.split(' ')[1])?.mainIcon.split('arrow-')[1]
@@ -111,6 +111,10 @@
 		{
 			label: 'Popularity',
 			name: 'movie.popularity',
+		},
+		{
+			label: 'Date Added',
+			name: 'createdAt',
 		},
 		// {
 		// 	label: 'Season',

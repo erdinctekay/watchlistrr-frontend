@@ -1,15 +1,6 @@
 import router from '@/router'
 import { useMovieStore } from '@/stores/MovieStore'
-
-export const returnPage = (pageName, id) => {
-	if (id) {
-		const { changeWatchlistId } = useMovieStore()
-		changeWatchlistId(id)
-
-		return router.push({ name: pageName, params: { id: id } })
-	}
-	router.push({ name: pageName })
-}
+import { useWatchlistStore } from '@/stores/WatchlistStore'
 
 export const routerReadyCallback = async () => {
 	await new Promise((resolve, reject) => {
@@ -40,6 +31,37 @@ export const pageChangedCallback = async () => {
 	newPageValue = null
 }
 
+let currentId
+let lastPageName
+
 export const newPageInformer = (to) => {
 	newPageValue = to
+
+	lastPageName = to.name
+	currentId = to.params.id
+}
+
+export const returnPage = (pageName, id) => {
+	// console.log('page change function triggered')
+	if (id) {
+		// do not reload same page without force
+		if (id === currentId) return
+
+		if (pageName === 'watchlistMovies.show') {
+			const { changeWatchlistId } = useMovieStore()
+			changeWatchlistId(id)
+		}
+
+		if (pageName === 'userWatchlists.show') {
+			const { changeWatchlistsBy } = useWatchlistStore()
+			changeWatchlistsBy(id)
+		}
+
+		return router.push({ name: pageName, params: { id: id } })
+	} else {
+		// do not reload same page without force
+		if (lastPageName === pageName) return
+
+		router.push({ name: pageName })
+	}
 }

@@ -33,7 +33,7 @@
 						class="watchlist-name text-body fw-bold"
 						style="text-overflow: ellipsis; overflow: hidden; white-space: pre"
 					>
-						{{ isHomePage ? 'Watchlists' : currentWatchlist?.title }}
+						{{ isHomePage || isUserWatchlistsPage ? 'Watchlists' : currentWatchlist?.title }}
 					</span>
 					<span
 						v-if="!isHomePage"
@@ -48,8 +48,16 @@
 						"
 					>
 						<i class="">by </i>
-						<a class="hover-highlight-button text-body cursor-pointer text-decoration-underline"
-							>{{ currentWatchlist?.user.displayName }}
+						<a
+							@click="
+								returnPage(
+									'userWatchlists.show',
+									isUserWatchlistsPage ? currentWatchlistsBy?.id : currentWatchlist?.user.id
+								)
+							"
+							class="hover-highlight-button text-body cursor-pointer text-decoration-underline"
+						>
+							{{ isUserWatchlistsPage ? currentWatchlistsBy?.displayName : currentWatchlist?.user.displayName }}
 						</a>
 					</span>
 					<span
@@ -71,15 +79,18 @@
 			</div>
 		</div>
 
-		<divider-constructor :mainClass="'border-1 border-end mx-3 my-1 d-none d-md-block'" />
+		<divider-constructor
+			v-if="(isUserWatchlistsPage && isUserPageOwner) || isHomePage || isWatchlistPage"
+			:mainClass="'border-1 border-end mx-3 my-1 d-none d-md-block'"
+		/>
 
 		<div class="action-buttons d-flex flex-row align-items-center me-1 me-md-0">
-			<div v-if="!isAuthorized && !isHomePage" class="d-flex flex-row">
+			<div v-if="!isAuthorized && !isHomePage && !isUserWatchlistsPage" class="d-flex flex-row">
 				<interaction-buttons-constructor :type="'watchlist'" />
 			</div>
 			<div v-else class="d-flex flex-row">
 				<button-constructor
-					v-if="isHomePage"
+					v-if="isHomePage || (isUserWatchlistsPage && isUserPageOwner)"
 					@click="openModal('addWatchlist')"
 					:mainColor="'primary'"
 					:mainClass="'rounded-pill px-2 p-1 my-1 text-light'"
@@ -91,7 +102,7 @@
 					Add New
 				</button-constructor>
 				<button-constructor
-					v-else
+					v-else-if="isWatchlistPage"
 					@click="openModal('addMovie')"
 					:mainColor="'primary'"
 					:mainClass="'rounded-pill px-2 p-1 my-1 text-light'"
@@ -112,15 +123,21 @@
 	import InteractionButtonsConstructor from '@/components/constructors/InteractionButtonsConstructor.vue'
 	import ControlDropdown from '@/components/dropdowns/ControlDropdown.vue'
 
-	import { onMounted, onUpdated, computed, ref, watchEffect, onBeforeUnmount } from 'vue'
+	import { onMounted, onUpdated, computed } from 'vue'
 	import { storeToRefs } from 'pinia'
 
+	import { router } from '@/helpers'
+
 	import { useMovieStore } from '@/stores/MovieStore'
+	import { useWatchlistStore } from '@/stores/WatchlistStore'
 	import { useModalStore } from '@/stores/ModalStore'
 
 	const { openModal } = useModalStore()
 
-	const { currentWatchlist, routerWatchlistId } = storeToRefs(useMovieStore())
+	const { currentWatchlist } = storeToRefs(useMovieStore())
+	const { currentWatchlistsBy } = storeToRefs(useWatchlistStore())
+
+	const { returnPage } = router
 
 	const props = defineProps({
 		colorScheme: {
@@ -147,11 +164,31 @@
 		return false
 	})
 
+	const isWatchlistPage = computed(() => {
+		if (props.currentPage.name === 'watchlistMovies.show') return true
+
+		return false
+	})
+
+	const isUserWatchlistsPage = computed(() => {
+		if (props.currentPage.name === 'userWatchlists.show') return true
+
+		return false
+	})
+
+	const isUserPageOwner = computed(() => {
+		if (!props.isAuthenticated) return false
+
+		if (isUserWatchlistsPage.value) return currentWatchlistsBy.value?.id === props.userCredentials.uid
+
+		return false
+	})
+
 	const isAuthorized = computed(() => {
 		if (!props.isAuthenticated) return false
 
 		const isOwner = currentWatchlist.value?.userId === props.userCredentials.uid
-		const isWatchlistPage = props.currentPage.name === 'watchlist.show'
+		const isWatchlistPage = props.currentPage.name === 'watchlistMovies.show'
 
 		return isWatchlistPage ? isOwner : false
 	})
@@ -161,12 +198,9 @@
 	})
 
 	onUpdated(() => {
+		resetTextOverflow()
 		controlTextOverflow()
 	})
-
-	// onBeforeUnmount(() => {
-	// 	isAuthorized.value = null
-	// })
 
 	// control margin-end due to ellipsis
 	const controlTextOverflow = () => {
@@ -176,9 +210,19 @@
 			const textBodyEl = watchlistInfoEl.querySelector('.watchlist-name')
 
 			if (textBodyEl.scrollWidth > textBodyEl.clientWidth) {
-				watchlistInfoEl.classList.remove('me-3')
-				watchlistInfoEl.classList.add('me-2')
+				if (watchlistInfoEl.classList.contains('me-3')) watchlistInfoEl.classList.remove('me-3')
+				if (!watchlistInfoEl.classList.contains('me-2')) watchlistInfoEl.classList.add('me-2')
 			}
+		})
+	}
+
+	// reset values to fix conflicts
+	const resetTextOverflow = () => {
+		const watchlistInfoEls = document.querySelectorAll('.watchlist-info')
+
+		watchlistInfoEls.forEach((watchlistInfoEl) => {
+			if (watchlistInfoEl.classList.contains('me-2')) watchlistInfoEl.classList.remove('me-2')
+			if (!watchlistInfoEl.classList.contains('me-3')) watchlistInfoEl.classList.add('me-3')
 		})
 	}
 </script>

@@ -3,7 +3,22 @@
 		<div class="container-fluid container-fluid-xxl py-2 px-3 px-sm-5 row g-0 m-auto">
 			<div class="d-flex flex-row g-0 w-100 justify-content-center">
 				<form-constructor :fields="fields" :submitButton="submitButton" @submit="handleSubmit">
-					<!-- <template v-slot:additional-area> -->
+					<template #before-form>
+						<div class="d-flex flex-row g-0 w-100 justify-content-between">
+							<h2 class="fs-5">LOGIN</h2>
+							<span class="small text-end">
+								Do you have an account?
+								<br />
+								<a
+									@click.stop="returnPage('login')"
+									class="hover-highlight-button text-body cursor-pointer text-decoration-none"
+								>
+									Login
+								</a>
+								instead.
+							</span>
+						</div>
+					</template>
 					<template #additional-area>
 						<form-show-password-toggle ref="passwordToggle" :isFormDisabled="ref(isFormDisabled)" />
 
@@ -27,13 +42,18 @@
 <script setup>
 	import FormConstructor from '@/components/constructors/FormConstructor.vue'
 	import FormShowPasswordToggle from '@/components/formParts/FormShowPasswordToggle.vue'
-	import { ref, computed } from 'vue'
-	import { useAuthStore } from '@/stores/AuthStore'
-	import { utils } from '@/helpers'
 
-	const { removeAllSpaces, normalizeSpacing, capitalizeWords } = utils
+	import { ref, computed } from 'vue'
+
+	import { utils } from '@/helpers'
+	import { router } from '@/helpers'
+
+	import { useAuthStore } from '@/stores/AuthStore'
 
 	const { register } = useAuthStore()
+
+	const { returnPage } = router
+	const { removeAllSpaces, normalizeSpacing, capitalizeWords } = utils
 
 	const fullName = ref('')
 	const email = ref('')

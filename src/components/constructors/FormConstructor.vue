@@ -1,5 +1,9 @@
 <template>
 	<form class="px-0" style="width: 320px" @submit.prevent="submitForm" novalidate>
+		<div v-if="$slots['before-form']" class="d-grid gap-2 mb-3">
+			<slot name="before-form"></slot>
+		</div>
+
 		<div v-for="field in fields" :key="field.name" class="input-group flex-wrap mb-2">
 			<div class="form-floating w-100">
 				<input
@@ -29,12 +33,12 @@
 			</div>
 		</div>
 
-		<div class="d-grid gap-2 mt-3">
+		<div v-if="$slots['additional-area']" class="d-grid gap-2 mt-3">
 			<!-- additional area -->
 			<slot name="additional-area"></slot>
 		</div>
 
-		<div class="d-grid gap-2 mt-3">
+		<div class="d-grid gap-2 mt-3" :class="submitButton.isHidden ? 'd-none' : ''">
 			<button-constructor
 				@click="submitForm"
 				:isDisabled="submitButton.disabled.value"

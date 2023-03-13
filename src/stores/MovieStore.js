@@ -16,7 +16,7 @@ export const useMovieStore = defineStore('movie', () => {
 	const sortFilter = computed(() => activeSortOptions.sortFilterMovie.split(' ')[0])
 	const sortOrder = computed(() => activeSortOptions.sortFilterMovie.split(' ')[1])
 	const lastPage = ref(null)
-	const routerWatchlistId = ref()
+	const routerWatchlistId = ref() /* also used on backend movie services */
 
 	// to send all data bout current watchlist to other components like header etc.
 	const currentWatchlist = ref(null)
@@ -67,5 +67,5 @@ export const useMovieStore = defineStore('movie', () => {
 		movies.watchlistId = routerWatchlistId.value
 	}
 
-	return { movies, getWatchlistMovies, changeWatchlistId, routerWatchlistId, currentWatchlist }
+	return { movies, getWatchlistMovies, changeWatchlistId, currentWatchlist, routerWatchlistId }
 })

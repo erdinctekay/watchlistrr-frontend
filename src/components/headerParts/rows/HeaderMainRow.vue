@@ -7,7 +7,7 @@
 		<div class="col">
 			<div class="row w-100 g-0 d-flex justify-content-center">
 				<h3 class="logo m-0">
-					<router-link :to="{ name: 'home' }" class="logo text-decoration-none">
+					<a @click="returnPage('home')" class="logo text-decoration-none cursor-pointer">
 						<img
 							src="/watchlistrr-logo.svg"
 							class="pe-2"
@@ -19,7 +19,7 @@
 							}`"
 						/>
 						<!-- <i> watch<b>listrr</b> </i> -->
-					</router-link>
+					</a>
 				</h3>
 			</div>
 		</div>
@@ -27,7 +27,7 @@
 			<div class="d-flex flex-row align-items-center">
 				<div v-if="!isAuthenticated" class="d-flex">
 					<span class="align-self-center text-nowrap d-none d-md-block small me-2">
-						<router-link :to="{ name: 'register' }" class="text-decoration-none h-100"> Register </router-link>
+						<a @click="returnPage('register')" class="text-decoration-none h-100 cursor-pointer">Register</a>
 						<span class="px-2">or</span>
 					</span>
 					<button-constructor

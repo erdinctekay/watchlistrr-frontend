@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-	import FormConstructor from '@/components/constructors/FormConstructor.vue'
+	import FormConstructor from '@/components/_constructors/FormConstructor.vue'
 	import FormShowPasswordToggle from '@/components/formParts/FormShowPasswordToggle.vue'
 	import { ref, computed, reactive } from 'vue'
 

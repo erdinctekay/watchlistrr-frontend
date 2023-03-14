@@ -31,7 +31,7 @@
 	</card-constructor>
 </template>
 <script setup>
-	import CardConstructor from '@/components/constructors/CardConstructor.vue'
+	import CardConstructor from '@/components/_constructors/CardConstructor.vue'
 
 	import { utils } from '@/helpers'
 

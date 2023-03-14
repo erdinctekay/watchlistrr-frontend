@@ -103,8 +103,8 @@
 	</div>
 </template>
 <script setup>
-	import InteractionButtonsConstructor from '@/components/constructors/InteractionButtonsConstructor.vue'
-	import PrivateItemIndicator from '@/components/icons/PrivateItemIndicator.vue'
+	import InteractionButtonsConstructor from '@/components/_constructors/InteractionButtonsConstructor.vue'
+	import PrivateItemIndicator from '@/components/indicators/PrivateItemIndicator.vue'
 	import ControlDropdown from '@/components/dropdowns/ControlDropdown.vue'
 
 	import { onMounted, onUpdated } from 'vue'

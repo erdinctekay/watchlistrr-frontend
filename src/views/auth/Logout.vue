@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-	import FormConstructor from '@/components/constructors/FormConstructor.vue'
+	import FormConstructor from '@/components/_constructors/FormConstructor.vue'
 	import { ref } from 'vue'
 	import { useAuthStore } from '@/stores/AuthStore'
 

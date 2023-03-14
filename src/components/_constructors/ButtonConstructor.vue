@@ -175,11 +175,15 @@
 			type: String,
 			default: '',
 		},
+		onClick: {
+			type: Function,
+		},
 	})
 
 	const emit = defineEmits(['click'])
 
 	const buttonClick = () => {
 		emit('click')
+		// console.log(props.onClick)
 	}
 </script>

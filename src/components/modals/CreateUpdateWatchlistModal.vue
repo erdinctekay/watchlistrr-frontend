@@ -36,8 +36,8 @@
 	</modal-constructor>
 </template>
 <script setup>
-	import ModalConstructor from '@/components/constructors/ModalConstructor.vue'
-	import FormConstructor from '@/components/constructors/FormConstructor.vue'
+	import ModalConstructor from '@/components/_constructors/ModalConstructor.vue'
+	import FormConstructor from '@/components/_constructors/FormConstructor.vue'
 
 	import { ref, computed, onMounted } from 'vue'
 

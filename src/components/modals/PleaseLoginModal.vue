@@ -24,7 +24,7 @@
 	</modal-constructor>
 </template>
 <script setup>
-	import ModalConstructor from '@/components/constructors/ModalConstructor.vue'
+	import ModalConstructor from '@/components/_constructors/ModalConstructor.vue'
 
 	import { computed, ref } from 'vue'
 

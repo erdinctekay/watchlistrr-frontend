@@ -74,8 +74,8 @@
 	</card-constructor>
 </template>
 <script setup>
-	import ButtonConstructor from '@/components/constructors/ButtonConstructor.vue'
-	import CardConstructor from '@/components/constructors/CardConstructor.vue'
+	import ButtonConstructor from '@/components/_constructors/ButtonConstructor.vue'
+	import CardConstructor from '@/components/_constructors/CardConstructor.vue'
 
 	import { utils } from '@/helpers'
 	import { router } from '@/helpers'

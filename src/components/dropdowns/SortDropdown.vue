@@ -25,8 +25,8 @@
 	import { storeToRefs } from 'pinia'
 	import { ref, reactive, watch, onMounted, computed } from 'vue'
 
-	import ButtonConstructor from '@/components/constructors/ButtonConstructor.vue'
-	import DropdownConstructor from '@/components/constructors/DropdownConstructor.vue'
+	import ButtonConstructor from '@/components/_constructors/ButtonConstructor.vue'
+	import DropdownConstructor from '@/components/_constructors/DropdownConstructor.vue'
 
 	import { useRouteStore } from '@/stores/RouteStore'
 	import { useSortStore } from '@/stores/SortStore'

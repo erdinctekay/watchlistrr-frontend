@@ -5,7 +5,7 @@
 				<form-constructor :fields="fields" :submitButton="submitButton" @submit="handleSubmit">
 					<template #before-form>
 						<div class="d-flex flex-row g-0 w-100 justify-content-between">
-							<h2 class="fs-5">LOGIN</h2>
+							<h2 class="fs-5">REGISTER</h2>
 							<span class="small text-end">
 								Do you have an account?
 								<br />
@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-	import FormConstructor from '@/components/constructors/FormConstructor.vue'
+	import FormConstructor from '@/components/_constructors/FormConstructor.vue'
 	import FormShowPasswordToggle from '@/components/formParts/FormShowPasswordToggle.vue'
 
 	import { ref, computed } from 'vue'

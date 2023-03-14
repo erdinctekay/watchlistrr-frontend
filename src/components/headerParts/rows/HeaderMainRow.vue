@@ -60,8 +60,8 @@
 	</div>
 </template>
 <script setup>
-	import ButtonConstructor from '@/components/constructors/ButtonConstructor.vue'
-	import DividerConstructor from '@/components/constructors/DividerConstructor.vue'
+	import ButtonConstructor from '@/components/_constructors/ButtonConstructor.vue'
+	import DividerConstructor from '@/components/_constructors/DividerConstructor.vue'
 
 	import AccountDropdown from '@/components/dropdowns/AccountDropdown.vue'
 

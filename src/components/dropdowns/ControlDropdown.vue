@@ -18,8 +18,8 @@
 	</div>
 </template>
 <script setup>
-	import ButtonConstructor from '@/components/constructors/ButtonConstructor.vue'
-	import DropdownConstructor from '@/components/constructors/DropdownConstructor.vue'
+	import ButtonConstructor from '@/components/_constructors/ButtonConstructor.vue'
+	import DropdownConstructor from '@/components/_constructors/DropdownConstructor.vue'
 
 	import { storeToRefs } from 'pinia'
 

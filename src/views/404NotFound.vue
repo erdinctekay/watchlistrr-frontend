@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-	import ButtonConstructor from '@/components/constructors/ButtonConstructor.vue'
+	import ButtonConstructor from '@/components/_constructors/ButtonConstructor.vue'
 	import { router } from '@/helpers'
 
 	const { returnPage } = router

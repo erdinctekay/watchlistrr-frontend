@@ -132,10 +132,11 @@
 	</div>
 </template>
 <script setup>
-	import ButtonConstructor from '@/components/constructors/ButtonConstructor.vue'
-	import DividerConstructor from '@/components/constructors/DividerConstructor.vue'
-	import InteractionButtonsConstructor from '@/components/constructors/InteractionButtonsConstructor.vue'
-	import PrivateItemIndicator from '@/components/icons/PrivateItemIndicator.vue'
+	import ButtonConstructor from '@/components/_constructors/ButtonConstructor.vue'
+	import DividerConstructor from '@/components/_constructors/DividerConstructor.vue'
+	import InteractionButtonsConstructor from '@/components/_constructors/InteractionButtonsConstructor.vue'
+
+	import PrivateItemIndicator from '@/components/indicators/PrivateItemIndicator.vue'
 	import ControlDropdown from '@/components/dropdowns/ControlDropdown.vue'
 
 	import { onMounted, onUpdated, computed } from 'vue'

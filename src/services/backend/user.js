@@ -21,6 +21,12 @@ const get = (id) => {
 	return result
 }
 
+// to get likes, follows etc.
+const getInteractions = (id, interaction) => {
+	let result = fetch(USER_URL + '/' + id + '/' + interaction, apiMethod('GET'))
+	return result
+}
+
 const create = async (body) => {
 	let result = fetch(USER_URL, apiMethod('POST', body))
 	return result
@@ -31,7 +37,7 @@ const create = async (body) => {
 // 	return result
 // }
 
-// const update = async (body, id) => {
+// const put = async (body, id) => {
 // 	let result = fetch(USER_URL + '/' + id, apiMethod('PUT', body))
 // 	return result
 // }
@@ -41,6 +47,6 @@ const create = async (body) => {
 // 	return result
 // }
 
-export { getWatchlistsByUser, get, create }
+export { getWatchlistsByUser, get, getInteractions, create }
 
-// export { getAll, get, create, remove, update, patch }
+// export { getAll, get, create, remove, put, patch }

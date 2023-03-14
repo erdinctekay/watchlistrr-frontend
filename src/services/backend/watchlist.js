@@ -27,21 +27,21 @@ const create = async (body) => {
 	return result
 }
 
-// const remove = (id) => {
-// 	let result = fetch(WATCHLIST_URL + '/' + id, apiMethod('DELETE'))
-// 	return result
-// }
+const remove = (id) => {
+	let result = fetch(WATCHLIST_URL + '/' + id, apiMethod('DELETE'))
+	return result
+}
 
-// const update = async (body, id) => {
+// const put = async (body, id) => {
 // 	let result = fetch(WATCHLIST_URL + '/' + id, apiMethod('PUT', body))
 // 	return result
 // }
 
-// const patch = async (body, id) => {
-// 	let result = fetch(WATCHLIST_URL + '/' + id, apiMethod('PATCH', body))
-// 	return result
-// }
+const patch = async (body, id) => {
+	let result = fetch(WATCHLIST_URL + '/' + id, apiMethod('PATCH', body))
+	return result
+}
 
-export { getAll, get, create }
+export { getAll, get, create, patch, remove }
 
-// export { getAll, get, create, remove, update, patch }
+// export { getAll, get, create, remove, put, patch }

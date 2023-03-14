@@ -10,14 +10,17 @@
 				:key="item.movie.id"
 				class="cursor-pointer"
 			/>
+		</div>
+		<div class="container-fluid container-fluid-xxl py-2 px-3 px-sm-5 row g-0 m-auto">
 			<div class="d-flex flex-row justify-content-center w-100">
-				<button @click="getWatchlistMovies" class="btn btn-primary w-25 fw-bold">LOAD MORE</button>
+				<load-more-button :clickAction="() => getWatchlistMovies()" />
 			</div>
 		</div>
 	</section>
 </template>
 
 <script setup>
+	import LoadMoreButton from '@/components/buttons/LoadMoreButton.vue'
 	import MovieCard from '@/components/cards/MovieCard.vue'
 
 	import { storeToRefs } from 'pinia'

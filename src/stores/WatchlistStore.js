@@ -1,10 +1,13 @@
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { reactive, ref, toRaw, computed } from 'vue'
 
 import { watchlist } from '@/services/backend/'
 import { user } from '@/services/backend/'
 
+import { router } from '@/helpers'
+
 import { useSortStore } from '@/stores/SortStore'
+import { useMovieStore } from '@/stores/MovieStore'
 
 export const useWatchlistStore = defineStore('watchlist', () => {
 	const { activeSortOptions } = useSortStore()
@@ -85,5 +88,40 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 		watchlists.watchlistsBy = routerWatchlistsBy.value
 	}
 
-	return { watchlists, getWatchlists, clearWathclistData, changeWatchlistsBy, currentWatchlistsBy }
+	const updateWatchlistDataById = (item, message = null) => {
+		const id = item.id
+		const index = watchlists.data.findIndex((watchlist) => watchlist.id === id)
+
+		const { updateCurrentWatchlistData, currentWatchlist } = useMovieStore()
+
+		console.log()
+
+		// check if triggered for delete
+		if (message === 'delete') {
+			const { returnPage } = router
+			if (index !== -1) watchlists.data.splice(index, 1)
+			if (currentWatchlist?.id === id) returnPage('home')
+			return
+		}
+
+		// else update with new values
+		if (index !== -1) {
+			const updatedWatchlist = {
+				...watchlists.data[index],
+				...item,
+			}
+			watchlists.data.splice(index, 1, updatedWatchlist)
+		}
+
+		updateCurrentWatchlistData(item)
+	}
+
+	return {
+		watchlists,
+		getWatchlists,
+		clearWathclistData,
+		changeWatchlistsBy,
+		currentWatchlistsBy,
+		updateWatchlistDataById,
+	}
 })

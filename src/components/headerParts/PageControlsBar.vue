@@ -8,6 +8,7 @@
 				:useDefaultButton="false"
 				:userCredentials="userCredentials"
 				:colorScheme="colorScheme"
+				:item="isWatchlistPage ? currentWatchlist : null"
 			>
 				<template #new-button>
 					<button-constructor
@@ -29,12 +30,25 @@
 				:class="`${isAuthorized ? 'rounded-end-3' : 'rounded-3'}`"
 			>
 				<div class="watchlist-info d-flex flex-column me-3" style="position: relative; max-width: 10.5rem">
-					<span
-						class="watchlist-name text-body fw-bold"
-						style="text-overflow: ellipsis; overflow: hidden; white-space: pre"
-					>
-						{{ isHomePage || isUserWatchlistsPage ? 'Watchlists' : currentWatchlist?.title }}
-					</span>
+					<div class="d-flex justify-content-between">
+						<span
+							class="watchlist-name text-body fw-bold"
+							style="text-overflow: ellipsis; overflow: hidden; white-space: pre"
+						>
+							{{
+								isHomePage || isUserWatchlistsPage
+									? isHomePage
+										? 'Watchlists'
+										: 'User Watchlists'
+									: currentWatchlist?.title
+							}}
+						</span>
+						<private-item-indicator
+							v-if="isWatchlistPage && !currentWatchlist?.public"
+							class="me-n2"
+							style="margin-top: -0.1rem"
+						/>
+					</div>
 					<span
 						v-if="!isHomePage"
 						class="fst-italic small text-nowrap text-muted"
@@ -91,7 +105,7 @@
 			<div v-else class="d-flex flex-row">
 				<button-constructor
 					v-if="isHomePage || (isUserWatchlistsPage && isUserPageOwner)"
-					@click="openModal('addWatchlist')"
+					@click="isAuthenticated ? openModal('addWatchlist') : openModal('pleaseLogin')"
 					:mainColor="'primary'"
 					:mainClass="'rounded-pill px-2 p-1 my-1 text-light'"
 					:hasMainIcon="true"
@@ -103,7 +117,7 @@
 				</button-constructor>
 				<button-constructor
 					v-else-if="isWatchlistPage"
-					@click="openModal('addMovie')"
+					@click="isAuthenticated ? openModal('addMovie') : openModal('pleaseLogin')"
 					:mainColor="'primary'"
 					:mainClass="'rounded-pill px-2 p-1 my-1 text-light'"
 					:hasMainIcon="true"
@@ -121,6 +135,7 @@
 	import ButtonConstructor from '@/components/constructors/ButtonConstructor.vue'
 	import DividerConstructor from '@/components/constructors/DividerConstructor.vue'
 	import InteractionButtonsConstructor from '@/components/constructors/InteractionButtonsConstructor.vue'
+	import PrivateItemIndicator from '@/components/icons/PrivateItemIndicator.vue'
 	import ControlDropdown from '@/components/dropdowns/ControlDropdown.vue'
 
 	import { onMounted, onUpdated, computed } from 'vue'
@@ -226,7 +241,13 @@
 		})
 	}
 </script>
-<style scoped>
+<style scoped></style>
+<style>
+	.watchlist-info .popover,
+	.watchlist-info .popover-body {
+		min-width: 225px !important;
+	}
+
 	.action-buttons > div > button:last-of-type {
 		margin-right: 0 !important;
 	}

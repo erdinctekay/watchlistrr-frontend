@@ -52,24 +52,10 @@
 													>
 														{{ item.title }}
 													</span>
-													<span
+													<private-item-indicator
 														v-if="type === 'watchlist' && !item.public"
-														style="padding-top: 3px"
-														:style="{ width: `${privateWatchlistIconWidth}px` }"
-													>
-														<span class="d-flex hover-highlight-icon align-items-center w-100 justify-content-end m-n1">
-															<i
-																@click.stop.prevent="return"
-																class="bi bi-eye-slash-fill filled-icon p-1 me-n1"
-																style="font-size: 1rem"
-																data-bs-toggle="popover"
-																data-bs-trigger="hover"
-																data-bs-placement="bottom"
-																data-bs-content="This watchlist is private to you 
-                                                                            and isn't visible for other users."
-															></i>
-														</span>
-													</span>
+														:IconWidth="privateWatchlistIconWidth"
+													/>
 												</span>
 											</p>
 											<slot name="after-title"></slot>
@@ -105,6 +91,7 @@
 										:type="type"
 										:userCredentials="userCredentials"
 										:colorScheme="colorScheme"
+										:item="item"
 									/>
 								</div>
 							</div>
@@ -117,12 +104,10 @@
 </template>
 <script setup>
 	import InteractionButtonsConstructor from '@/components/constructors/InteractionButtonsConstructor.vue'
+	import PrivateItemIndicator from '@/components/icons/PrivateItemIndicator.vue'
 	import ControlDropdown from '@/components/dropdowns/ControlDropdown.vue'
 
-	import { Popover } from 'bootstrap'
-	import { onMounted } from 'vue'
-
-	import { enablePopovers } from '@/helpers/ui'
+	import { onMounted, onUpdated } from 'vue'
 
 	const props = defineProps({
 		type: {
@@ -148,12 +133,12 @@
 	})
 
 	onMounted(() => {
-		enablePopovers(Popover)
-
 		const backdropUrl = `url(https://image.tmdb.org/t/p/w500${props.item.backdropPath})`
 		const root = document.querySelector(':root')
 		root.style.setProperty('--backdrop-url', backdropUrl)
 	})
+
+	onUpdated(() => {})
 
 	const privateWatchlistIconWidth = 36
 	const sideImageWidth = props.type === 'movie' ? 100 : 0

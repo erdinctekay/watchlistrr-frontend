@@ -21,9 +21,17 @@
 	import ButtonConstructor from '@/components/constructors/ButtonConstructor.vue'
 	import DropdownConstructor from '@/components/constructors/DropdownConstructor.vue'
 
-	// import { router } from '@/helpers'
 	import { storeToRefs } from 'pinia'
+
+	import { capitalizeWords } from '@/helpers/utils'
+	import { deleteAction } from '@/helpers/actions'
+
+	import { useModalStore } from '@/stores/ModalStore'
+	import { useUserStore } from '@/stores/UserStore'
+
+	const { openModal } = useModalStore()
 	const { userCredentials } = storeToRefs(props)
+
 	// const { returnPage } = router
 
 	const props = defineProps({
@@ -47,23 +55,51 @@
 			type: String,
 			default: 'dropstart',
 		},
+		item: {
+			type: Object,
+			default: null,
+		},
 	})
+
+	const { askOnDelete } = storeToRefs(useUserStore())
+
+	const preferredDeleteAction = async () => {
+		console.log('clicked DELETE - ask:' + askOnDelete.value)
+		if (!askOnDelete?.value) {
+			console.log('delete directly')
+
+			let response = await deleteAction(props.type, props.item)
+
+			let success = response.ok
+			console.log('success: ' + success)
+		} else {
+			console.log('open modal')
+			openModal(`deleteItem/${props.type}`, props.item)
+		}
+	}
 
 	const controlDropdown = [
 		{
 			label: 'Edit ' + props.type,
 			name: 'edit',
 			mainIcon: 'pencil-fill',
-			// action: () => returnPage('account'),
+			action: () => openModal(`add${capitalizeWords(props.type)}`, props.item),
 		},
 		{
 			label: 'Delete ' + props.type,
 			name: 'delete',
 			mainIcon: 'trash-fill',
-
-			// action: () => returnPage('account'),
+			action: () => preferredDeleteAction(),
 		},
 	]
+
+	// movies not editable since fething from TMDB
+	if (props.type === 'movie') {
+		const editIndex = controlDropdown.findIndex((item) => item.name === 'edit')
+		if (editIndex > -1) {
+			controlDropdown.splice(editIndex, 1)
+		}
+	}
 
 	const dropdownObject = {
 		'Control Dropdown': {

@@ -67,5 +67,19 @@ export const useMovieStore = defineStore('movie', () => {
 		movies.watchlistId = routerWatchlistId.value
 	}
 
-	return { movies, getWatchlistMovies, changeWatchlistId, currentWatchlist, routerWatchlistId }
+	const updateCurrentWatchlistData = (item) => {
+		if (currentWatchlist) {
+			currentWatchlist.value = item
+		}
+		return
+	}
+
+	return {
+		movies,
+		getWatchlistMovies,
+		changeWatchlistId,
+		currentWatchlist,
+		routerWatchlistId,
+		updateCurrentWatchlistData,
+	}
 })

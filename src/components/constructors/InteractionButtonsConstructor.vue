@@ -2,6 +2,7 @@
 	<!-- prettier-ignore -->
 	<button-constructor
 		v-for="item in interactionObject[type].items"
+		@click="item.action"
 		:key="item.name"
 		:mainColor="item.mainColor || interactionObject[type].defaults.mainColor || interactionObject.defaults.mainColor"
 		:mainClass="item.mainClass || interactionObject[type].defaults.mainClass || interactionObject.defaults.mainClass"
@@ -17,6 +18,14 @@
 <script setup>
 	import ButtonConstructor from '@/components/constructors/ButtonConstructor.vue'
 
+	import { storeToRefs } from 'pinia'
+
+	import { useAuthStore } from '@/stores/AuthStore'
+	import { useModalStore } from '@/stores/ModalStore'
+
+	const { openModal } = useModalStore()
+	const { isAuthenticated } = storeToRefs(useAuthStore())
+
 	const props = defineProps({
 		type: {
 			type: String,
@@ -24,17 +33,23 @@
 		},
 	})
 
+	const makeInteraction = () => {
+		console.log('will be interaction here')
+		return
+	}
+
 	const movieInteractions = [
 		{
 			name: 'like',
 			mainIcon: 'heart',
 			mainIconSize: '1.275rem',
 			mainIconStyle: 'transform: translateY(1px)',
+			action: () => (isAuthenticated.value ? makeInteraction() : openModal(`pleaseLogin`)),
 		},
 		{
 			name: 'watch',
 			mainIcon: 'check-circle',
-			// action: () => function(),
+			action: () => (isAuthenticated.value ? makeInteraction() : openModal(`pleaseLogin`)),
 		},
 	]
 
@@ -44,11 +59,12 @@
 			mainIcon: 'star',
 			mainIconSize: '1.275rem',
 			mainIconStyle: 'transform: translateY(-1px)',
+			action: () => (isAuthenticated.value ? makeInteraction() : openModal(`pleaseLogin`)),
 		},
 		{
 			name: 'follow',
 			mainIcon: 'plus-circle',
-			// action: () => function(),
+			action: () => (isAuthenticated.value ? makeInteraction() : openModal(`pleaseLogin`)),
 		},
 	]
 

@@ -11,6 +11,7 @@ import {
 } from 'firebase/auth'
 
 import { useWatchlistStore } from '@/stores/WatchlistStore'
+import { useUserStore } from '@/stores/UserStore'
 
 export const useAuthStore = defineStore('auth', () => {
 	// core setup
@@ -18,9 +19,12 @@ export const useAuthStore = defineStore('auth', () => {
 	const currentUser = ref(null)
 	const { returnPage } = router
 
+	const { getInteractions, clearUserStore } = useUserStore()
+
 	const login = async ({ email, password }) => {
 		const { user } = await signInWithEmailAndPassword(auth, email, password)
 		currentUser.value = user
+		await getInteractions(user.uid)
 		returnPage('home')
 	}
 
@@ -31,13 +35,21 @@ export const useAuthStore = defineStore('auth', () => {
 		await updateProfile(user, {
 			displayName: fullName,
 		})
+		// create user on our db
+		await getInteractions(user.uid)
 		returnPage('home')
 	}
 
 	const logout = async () => {
 		await signOut(auth)
 		currentUser.value = null
+		// clear local storage items
+		localStorage.clear()
+		// clear user store
+		clearUserStore()
 		returnPage('home')
+		// to get default local storage items
+		location.reload()
 	}
 
 	/* controllers start */

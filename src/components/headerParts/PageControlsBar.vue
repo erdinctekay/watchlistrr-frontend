@@ -100,7 +100,7 @@
 
 		<div class="action-buttons d-flex flex-row align-items-center me-1 me-md-0">
 			<div v-if="!isAuthorized && !isHomePage && !isUserWatchlistsPage" class="d-flex flex-row">
-				<interaction-buttons-constructor :type="'watchlist'" />
+				<interaction-buttons-constructor :type="'watchlist'" :item="isWatchlistPage ? currentWatchlist : {}" />
 			</div>
 			<div v-else class="d-flex flex-row">
 				<button-constructor

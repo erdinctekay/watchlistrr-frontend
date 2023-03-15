@@ -21,15 +21,27 @@ const get = (id) => {
 	return result
 }
 
+const create = (body) => {
+	let result = fetch(USER_URL, apiMethod('POST', body))
+	return result
+}
+
 // to get likes, follows etc.
 const getInteractions = (id, interaction) => {
 	let result = fetch(USER_URL + '/' + id + '/' + interaction, apiMethod('GET'))
 	return result
 }
 
-const create = async (body) => {
-	let result = fetch(USER_URL, apiMethod('POST', body))
-	return result
+const makeInteraction = (interaction, interactionId, body) => {
+	if (interactionId) {
+		// if interactionId provided means delete
+		let result = fetch(BASE_URL + '/' + interaction + '/' + interactionId, apiMethod('DELETE'))
+		return result
+	} else {
+		// else make post req
+		let result = fetch(BASE_URL + '/' + interaction, apiMethod('POST', body))
+		return result
+	}
 }
 
 // const remove = (id) => {
@@ -37,16 +49,16 @@ const create = async (body) => {
 // 	return result
 // }
 
-// const put = async (body, id) => {
+// const put = (body, id) => {
 // 	let result = fetch(USER_URL + '/' + id, apiMethod('PUT', body))
 // 	return result
 // }
 
-// const patch = async (body, id) => {
+// const patch = (body, id) => {
 // 	let result = fetch(USER_URL + '/' + id, apiMethod('PATCH', body))
 // 	return result
 // }
 
-export { getWatchlistsByUser, get, getInteractions, create }
+export { getWatchlistsByUser, get, create, getInteractions, makeInteraction }
 
 // export { getAll, get, create, remove, put, patch }

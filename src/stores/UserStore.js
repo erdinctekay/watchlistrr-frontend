@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
-import { ref, reactive, onBeforeMount } from 'vue'
+import { defineStore, storeToRefs } from 'pinia'
+import { ref, reactive, onBeforeMount, toRaw } from 'vue'
 
 import { user } from '@/services/backend/index'
 
@@ -15,12 +15,19 @@ export const useUserStore = defineStore('user', () => {
 		console.log(interactionTypes)
 
 		try {
-			interactionTypes.forEach(async (interaction) => {
-				const response = await user.getInteractions(id, interaction)
+			const responses = await Promise.all(interactionTypes.map((interaction) => user.getInteractions(id, interaction)))
+
+			for (let i = 0; i < responses.length; i++) {
+				const response = responses[i]
+				const interactionType = interactionTypes[i]
+
 				if (response.ok) {
-					userInteractionData[interaction] = await response.json()
+					const data = await response.json()
+					userInteractionData[interactionType] = data
 				}
-			})
+			}
+
+			console.log(toRaw(userInteractionData))
 		} catch (error) {
 			console.error(error)
 		}
@@ -33,8 +40,6 @@ export const useUserStore = defineStore('user', () => {
 
 	const clearUserStore = () => {
 		askOnDelete.value = null
-		userData.data = []
-		userData.userId = null
 
 		const interactionTypes = Object.keys(userInteractionData)
 		interactionTypes.forEach(async (interaction) => {
@@ -55,5 +60,5 @@ export const useUserStore = defineStore('user', () => {
 		}
 	})
 
-	return { userData, askOnDelete, toggleAskOnDeleteStore, getInteractions, clearUserStore }
+	return { askOnDelete, toggleAskOnDeleteStore, getInteractions, clearUserStore, userInteractionData }
 })

@@ -24,7 +24,6 @@ export const useAuthStore = defineStore('auth', () => {
 	const login = async ({ email, password }) => {
 		const { user } = await signInWithEmailAndPassword(auth, email, password)
 		currentUser.value = user
-		await getInteractions(user.uid)
 		returnPage('home')
 	}
 
@@ -35,8 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
 		await updateProfile(user, {
 			displayName: fullName,
 		})
-		// create user on our db
-		await getInteractions(user.uid)
+		// first create user on our db
 		returnPage('home')
 	}
 
@@ -79,6 +77,8 @@ export const useAuthStore = defineStore('auth', () => {
 
 	onBeforeMount(async () => {
 		await fetchUser()
+		/* commented below cause watch seems satisfy needs */
+		// if (isAuthenticated.value) await getInteractions(currentUser.value.uid)
 	})
 
 	/* controllers end */
@@ -93,8 +93,9 @@ export const useAuthStore = defineStore('auth', () => {
 	/* to do when auth status change */
 	const { clearWathclistData } = useWatchlistStore()
 
-	watch(isAuthenticated, (newValue, oldValue) => {
-		if (newValue !== oldValue) return clearWathclistData()
+	watch(isAuthenticated, async (newValue, oldValue) => {
+		if (newValue !== oldValue) clearWathclistData()
+		if (newValue === true) await getInteractions(currentUser.value.uid)
 	})
 	/* to do when auth status change */
 

@@ -11,9 +11,9 @@
 				<span class="small fst-italic">
 					{{ formatCount(item.moviesCount, 'movie') }}
 					<b>·</b>
-					{{ formatCount(item.favCount, 'favorite') }}
+					{{ formatCount(item.favsCount, 'favorite') }}
 					<b>·</b>
-					{{ formatCount(item.followCount, 'follower') }}
+					{{ formatCount(item.followsCount, 'follower') }}
 				</span>
 			</div>
 

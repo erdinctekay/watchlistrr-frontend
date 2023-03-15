@@ -82,12 +82,12 @@
 									style="min-height: 2rem"
 								>
 									<div class="w-auto justify-content-end align-items-end d-flex flex-nowrap">
-										<interaction-buttons-constructor :type="type" />
+										<interaction-buttons-constructor :type="type" :item="item" />
 									</div>
 								</div>
 								<div class="w-auto justify-content-end align-items-center d-flex flex-nowrap">
 									<control-dropdown
-										v-if="(type === 'watchlist' && isAuthorized) || type === 'movie'"
+										v-if="isAuthorized"
 										:type="type"
 										:userCredentials="userCredentials"
 										:colorScheme="colorScheme"

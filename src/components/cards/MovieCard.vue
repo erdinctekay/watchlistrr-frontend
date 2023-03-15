@@ -1,5 +1,11 @@
 <template>
-	<card-constructor type="movie" :item="item" :userCredentials="userCredentials || {}" :colorScheme="colorScheme">
+	<card-constructor
+		type="movie"
+		:item="item"
+		:userCredentials="userCredentials || {}"
+		:colorScheme="colorScheme"
+		:isAuthorized="isAuthorized"
+	>
 		<template #after-title>
 			<div class="pt-3 d-flex justify-content-start align-items-end text-muted">
 				<span class="small fst-italic">
@@ -36,12 +42,21 @@
 	import { utils } from '@/helpers'
 
 	import { storeToRefs } from 'pinia'
+	import { computed } from 'vue'
 
 	import { useAuthStore } from '@/stores/AuthStore'
 	import { useColorSchemeStore } from '@/stores/ColorSchemeStore'
 
-	const { userCredentials } = storeToRefs(useAuthStore())
+	const { userCredentials, isAuthenticated } = storeToRefs(useAuthStore())
 	const { colorScheme } = storeToRefs(useColorSchemeStore())
+
+	const isAuthorized = computed(() => {
+		if (!isAuthenticated.value) return false
+
+		const isOwner = props.currentWatchlist.userId === userCredentials.value.uid
+
+		return isOwner
+	})
 
 	const props = defineProps({
 		item: {
@@ -54,6 +69,10 @@
 		},
 		dateAdded: {
 			type: String,
+			required: true,
+		},
+		currentWatchlist: {
+			type: Object,
 			required: true,
 		},
 	})

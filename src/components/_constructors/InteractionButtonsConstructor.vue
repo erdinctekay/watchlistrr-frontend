@@ -50,16 +50,16 @@
 	})
 
 	const updateInteractionData = () => {
-		const like = userInteractionData.value.likes.find((like) => like.movieId === props.item.id)
+		const like = userInteractionData.value.likes.find((like) => like.movieId === props.item?.id)
 		interactionData.isLiked = like ? like.id : false
 
-		const watch = userInteractionData.value.watchs.find((watch) => watch.movieId === props.item.id)
+		const watch = userInteractionData.value.watchs.find((watch) => watch.movieId === props.item?.id)
 		interactionData.isWatched = watch ? watch.id : false
 
-		const fav = userInteractionData.value.favs.find((fav) => fav.watchlistId === props.item.id)
+		const fav = userInteractionData.value.favs.find((fav) => fav.watchlistId === props.item?.id)
 		interactionData.isFavorited = fav ? fav.id : false
 
-		const follow = userInteractionData.value.follows.find((follow) => follow.watchlistId === props.item.id)
+		const follow = userInteractionData.value.follows.find((follow) => follow.watchlistId === props.item?.id)
 		interactionData.isFollowed = follow ? follow.id : false
 	}
 

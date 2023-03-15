@@ -10,7 +10,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h1 class="modal-title fs-5">{{ item.title.value }}</h1>
+					<h1 class="modal-title fs-5">{{ item.title.value || item.title }}</h1>
 					<button
 						type="button"
 						class="btn-close"
@@ -43,7 +43,7 @@
 						:textClass="'small'"
 						:isDisabled="item.successButton.disabled.value"
 					>
-						{{ item.successButton.text }}
+						{{ item.successButton.text.value || item.successButton.text }}
 					</button-constructor>
 				</div>
 			</div>

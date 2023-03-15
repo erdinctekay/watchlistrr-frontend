@@ -128,11 +128,11 @@
 		// },
 		{
 			label: 'Favorites',
-			name: 'favCount',
+			name: 'favsCount',
 		},
 		{
 			label: 'Followers',
-			name: 'followCount',
+			name: 'followsCount',
 		},
 		// {
 		// 	label: 'Total Movies',
@@ -179,9 +179,8 @@
 			...item,
 			action: () =>
 				changeSortOptions('sortFilterMovie', item.name + ' ' + activeSortOptions.value.sortFilterMovie.split(' ')[1]),
-			mainClassExtra: computed(() => {
-				return activeSortOptions.value.sortFilterMovie.split(' ')[0] === item.name ? 'active' : ''
-			}),
+			// prettier-ignore
+			mainClassExtra: computed(() => activeSortOptions.value.sortFilterMovie.split(' ')[0] === item.name ? 'active' : ''),
 		})),
 	}
 
@@ -203,9 +202,8 @@
 			...item,
 			action: () =>
 				changeSortOptions('sortFilterList', item.name + ' ' + activeSortOptions.value.sortFilterList.split(' ')[1]),
-			mainClassExtra: computed(() => {
-				return activeSortOptions.value.sortFilterList.split(' ')[0] === item.name ? 'active' : ''
-			}),
+			// prettier-ignore
+			mainClassExtra: computed(() => activeSortOptions.value.sortFilterList.split(' ')[0] === item.name ? 'active' : ''),
 		})),
 	}
 
@@ -239,9 +237,7 @@
 			...item,
 			action: () => sortOrderAction(item),
 			mainClassExtra: computed(() => {
-				watch(currentPage.value, () => {
-					return findActiveSortOrder(item)
-				})
+				watch(currentPage.value, () => findActiveSortOrder(item))
 				return findActiveSortOrder(item)
 			}),
 		})),

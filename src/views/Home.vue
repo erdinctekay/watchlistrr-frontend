@@ -10,9 +10,12 @@
 				class="cursor-pointer"
 			/>
 		</div>
-		<div class="container-fluid container-fluid-xxl py-2 px-3 px-sm-5 row g-0 m-auto">
+		<div
+			v-if="!isAllDataFetched && isInitialFetchDone"
+			class="container-fluid container-fluid-xxl py-2 px-3 px-sm-5 row g-0 m-auto"
+		>
 			<div class="d-flex flex-row justify-content-center w-100">
-				<load-more-button :clickAction="() => getWatchlists('all')" />
+				<load-more-button :isDisabled="isFetching" :clickAction="() => getWatchlists('all')" />
 			</div>
 		</div>
 	</section>
@@ -29,17 +32,21 @@
 
 	import { useWatchlistStore } from '@/stores/WatchlistStore'
 
+	const { getWatchlists, changeWatchlistsBy } = useWatchlistStore()
+	// prettier-ignore
+	const { watchlists, currentWatchlistsBy, isFetching, isAllDataFetched, isInitialFetchDone } = storeToRefs(useWatchlistStore())
+
 	const { returnPage } = router
 
-	const { getWatchlists, changeWatchlistsBy } = useWatchlistStore()
-	const { watchlists, currentWatchlistsBy } = storeToRefs(useWatchlistStore())
-
-	onBeforeMount(() => {
+	onBeforeMount(async () => {
 		// if initial load made on this page - otherwise route helper takes care
 		if (!currentWatchlistsBy.value || currentWatchlistsBy.value !== 'all') {
 			// set watchlist id to store
-			changeWatchlistsBy('all')
+			await changeWatchlistsBy('all')
 		}
+
+		// get initial data
+		if (!isInitialFetchDone.value) getWatchlists('all')
 	})
 </script>
 

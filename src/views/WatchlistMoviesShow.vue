@@ -5,15 +5,19 @@
 			<movie-card
 				v-for="item in movies.data"
 				:item="item.movie"
+				:currentWatchlist="currentWatchlist"
 				:dateAdded="item.createdAt"
 				:addedBy="item.userId"
 				:key="item.movie.id"
 				class="cursor-pointer"
 			/>
 		</div>
-		<div class="container-fluid container-fluid-xxl py-2 px-3 px-sm-5 row g-0 m-auto">
+		<div
+			v-if="!isAllDataFetched && isInitialFetchDone"
+			class="container-fluid container-fluid-xxl py-2 px-3 px-sm-5 row g-0 m-auto"
+		>
 			<div class="d-flex flex-row justify-content-center w-100">
-				<load-more-button :clickAction="() => getWatchlistMovies()" />
+				<load-more-button :isDisabled="isFetching" :clickAction="() => getWatchlistMovies()" />
 			</div>
 		</div>
 	</section>
@@ -28,17 +32,27 @@
 
 	import { useMovieStore } from '@/stores/MovieStore'
 	import { useRouteStore } from '@/stores/RouteStore'
+	import { useSortStore } from '@/stores/SortStore'
 
-	const { getWatchlistMovies, changeWatchlistId, currentWatchlist } = useMovieStore()
-	const { movies } = storeToRefs(useMovieStore())
+	const { updateSearchQuery, activeSortOptions } = useSortStore()
+	const { getWatchlistMovies, changeWatchlistId } = useMovieStore()
+	const { movies, currentWatchlist, isFetching, isAllDataFetched, isInitialFetchDone } = storeToRefs(useMovieStore())
 
-	onBeforeMount(() => {
+	onBeforeMount(async () => {
+		// if there is search value reset
+		if (activeSortOptions.updateSearchQuery !== '') updateSearchQuery('')
+
 		// if initial load made on this page - otherwise route helper takes care
-		if (!currentWatchlist) {
+		if (!currentWatchlist.value) {
 			// set watchlist id to store
 			const { currentPage } = useRouteStore()
-			changeWatchlistId(currentPage.params.id)
+			await changeWatchlistId(currentPage.params.id)
 		}
+
+		// if there is search value reset
+		if (activeSortOptions.updateSearchQuery !== '') updateSearchQuery('')
+		// get initial data
+		if (!isInitialFetchDone.value) await getWatchlistMovies()
 	})
 </script>
 

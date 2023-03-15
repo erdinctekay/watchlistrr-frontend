@@ -2,10 +2,11 @@
 	<button-constructor
 		@click="clickAction()"
 		:mainColor="'primary'"
-		:mainClass="'w-100 w-sm-25 fw-bold'"
+		:mainClass="`w-100 w-sm-25 fw-bold ${isDisabled ? 'disabled' : ''}`"
 		:textClass="'w-100'"
 	>
-		LOAD MORE
+		<span v-if="isDisabled"> LOADING </span>
+		<span v-else>LOAD MORE</span>
 	</button-constructor>
 </template>
 <script setup>
@@ -14,6 +15,10 @@
 	const props = defineProps({
 		clickAction: {
 			type: Function,
+			required: true,
+		},
+		isDisabled: {
+			type: Boolean,
 			required: true,
 		},
 	})

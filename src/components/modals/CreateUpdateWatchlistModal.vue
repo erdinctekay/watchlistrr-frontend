@@ -48,7 +48,7 @@
 
 	import { useWatchlistStore } from '@/stores/WatchlistStore'
 
-	const { updateWatchlistDataById } = useWatchlistStore()
+	const { updateWatchlistDataById, refetchWatchlists } = useWatchlistStore()
 
 	const { normalizeSpacing } = utils
 
@@ -108,6 +108,7 @@
 		}
 
 		if (success) {
+			if (!isEditing.value) refetchWatchlists()
 			isFormDisabled.value = false
 			triggerModalClose.value = true
 		}
@@ -130,7 +131,7 @@
 					return true
 				}
 			}),
-			text: 'Save',
+			text: computed(() => `${isEditing.value ? 'Save' : 'Create'}`),
 			action: () => handleSubmit(),
 		},
 	}

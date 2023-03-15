@@ -7,12 +7,17 @@ export const useSortStore = defineStore('sort', () => {
 	const activeSortOptions = reactive({
 		sortFilterList: null,
 		sortFilterMovie: null,
+		searchQuery: '',
 	})
 
 	// defaults
 	const sortDefaults = {
 		sortFilterList: 'updatedAt desc',
-		sortFilterMovie: 'movie.title desc',
+		sortFilterMovie: 'createdAt desc',
+	}
+
+	const updateSearchQuery = (value) => {
+		activeSortOptions.searchQuery = value
 	}
 
 	const changeSortOptions = async (type, value) => {
@@ -48,5 +53,5 @@ export const useSortStore = defineStore('sort', () => {
 		if (!activeSortOptions.sortFilterMovie) changeSortOptions('sortFilterMovie', sortDefaults.sortFilterMovie)
 	})
 
-	return { changeSortOptions, activeSortOptions }
+	return { changeSortOptions, activeSortOptions, updateSearchQuery }
 })

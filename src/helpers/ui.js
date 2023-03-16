@@ -223,6 +223,7 @@ const getPageScrollPosition = () => {
 			}
 
 			observeHeaderHeight()
+			observeFooterHeight()
 		})
 	})
 }
@@ -239,6 +240,21 @@ const observeHeaderHeight = () => {
 
 	if (headerTotalHeight != body.style.getPropertyValue('--header-height').replace(/\D/g, '')) {
 		body.style.cssText += '--header-height: ' + headerTotalHeight + 'px !important;'
+	}
+}
+
+const observeFooterHeight = () => {
+	const footerChildren = document.querySelectorAll('footer section')
+	let footerTotalHeight = 0
+
+	footerChildren.forEach((footerChild) => {
+		footerTotalHeight += footerChild.clientHeight
+	})
+
+	body.style.cssText += '--footer-height: ' + footerTotalHeight + 'px !important;'
+
+	if (footerTotalHeight != body.style.getPropertyValue('--footer-height').replace(/\D/g, '')) {
+		body.style.cssText += '--footer-height: ' + footerTotalHeight + 'px !important;'
 	}
 }
 

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref, computed, onBeforeMount, watch } from 'vue'
+import { ref, reactive, computed, onBeforeMount, watch } from 'vue'
 import { router } from '@/helpers'
+import { user as userService } from '@/services/backend/'
 import { auth } from '@/services/firebase'
 import {
 	createUserWithEmailAndPassword,
@@ -8,6 +9,7 @@ import {
 	signInWithEmailAndPassword,
 	signOut,
 	updateProfile,
+	sendEmailVerification,
 } from 'firebase/auth'
 
 import { useWatchlistStore } from '@/stores/WatchlistStore'
@@ -16,7 +18,9 @@ import { useUserStore } from '@/stores/UserStore'
 export const useAuthStore = defineStore('auth', () => {
 	// core setup
 
-	const currentUser = ref(null)
+	const currentUser = reactive({
+		value: null,
+	})
 	const { returnPage } = router
 
 	const { getInteractions, clearUserStore } = useUserStore()
@@ -24,6 +28,20 @@ export const useAuthStore = defineStore('auth', () => {
 	const login = async ({ email, password }) => {
 		const { user } = await signInWithEmailAndPassword(auth, email, password)
 		currentUser.value = user
+
+		// check if user present is on db
+		const response = await userService.get(user.uid)
+		// if not create it
+		if (!response.ok) {
+			// console.log('user not found on db - will be created')
+
+			// if not create user on our db
+			const response = await userService.create({ displayName: user.displayName })
+			// if user cannot created with success logout
+			if (!response.ok) return logout()
+
+			// console.log('user created with success!')
+		}
 		returnPage('home')
 	}
 
@@ -31,10 +49,20 @@ export const useAuthStore = defineStore('auth', () => {
 		// prettier-ignore
 		const { user } = await createUserWithEmailAndPassword(auth, email, password)
 		currentUser.value = user
+		// set first for block flicking on view
+		currentUser.value = { ...user, displayName: fullName }
 		await updateProfile(user, {
 			displayName: fullName,
 		})
+		// then take last value with success
+		fetchUser()
+		// Send verification email
+		await sendVerificationEmail(user)
 		// first create user on our db
+		const response = await userService.create({ displayName: fullName })
+		// if user cannot created with success logout
+		if (!response.ok) return logout()
+		// redirect
 		returnPage('home')
 	}
 
@@ -50,18 +78,31 @@ export const useAuthStore = defineStore('auth', () => {
 		location.reload()
 	}
 
+	const sendVerificationEmail = async (user) => {
+		await sendEmailVerification(user)
+	}
+
+	const sendVerificationEmailAgain = async () => {
+		if (isAuthenticated) {
+			await sendVerificationEmail(currentUser.value)
+		}
+	}
+
 	/* controllers start */
 
 	const isFetching = ref(null)
 	const fetchUser = async () => {
 		// flag fetching
 		isFetching.value = true
+		// console.log('fetching user')
 
 		// use bc to sync
 		const authChannel = new BroadcastChannel('auth')
 		await new Promise((resolve) => {
 			// detect auth state change
 			onAuthStateChanged(auth, (user) => {
+				// console.log('auth state changed - user is: ' + user?.displayName)
+
 				if (user === null) {
 					currentUser.value = null
 					authChannel.postMessage({ auth: false })
@@ -99,5 +140,14 @@ export const useAuthStore = defineStore('auth', () => {
 	})
 	/* to do when auth status change */
 
-	return { login, register, logout, fetchUser, isAuthenticated, userCredentials, isFetching }
+	return {
+		login,
+		register,
+		logout,
+		fetchUser,
+		isAuthenticated,
+		userCredentials,
+		isFetching,
+		sendVerificationEmailAgain,
+	}
 })

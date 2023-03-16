@@ -28,7 +28,7 @@
 			class="ps-4 bg-border-box text-body bg-standart hover-highlight focus-highlight-border 
 							form-control input-search border-transparent border-0 rounded-pill"
 			type="text"
-			placeholder="Search"
+			:placeholder="`${props.placeholder ? props.placeholder : 'Search'}`"
 			aria-label="Search"
 			style="padding-right: 38px; font-size: 0.875rem"
 			data-bs-toggle="popover"
@@ -48,12 +48,12 @@
 	import { utils } from '@/helpers'
 	import { useSortStore } from '@/stores/SortStore'
 
-	const { removeAllSpaces, normalizeSpacing, capitalizeWords } = utils
+	const { normalizeSpacing, sanitize } = utils
 
 	const searchQuery = ref()
 
 	const searchAction = () => {
-		searchQuery.value = normalizeSpacing(searchQuery.value)
+		searchQuery.value = normalizeSpacing(sanitize(searchQuery.value))
 		let searchValue = searchQuery.value
 
 		setTimeout(() => {
@@ -72,6 +72,10 @@
 		currentPage: {
 			type: Object,
 			required: true,
+		},
+		placeholder: {
+			type: String,
+			default: null,
 		},
 	})
 </script>

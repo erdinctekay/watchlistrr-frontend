@@ -53,7 +53,7 @@
 	const { register } = useAuthStore()
 
 	const { returnPage } = router
-	const { removeAllSpaces, normalizeSpacing, capitalizeWords } = utils
+	const { removeAllSpaces, normalizeSpacing, capitalizeWords, sanitize } = utils
 
 	const fullName = ref('')
 	const email = ref('')
@@ -67,7 +67,7 @@
 	// form fields
 	// prettier-ignore
 	const fields = [
-		{ label: 'Full Name', name: 'full-name', type: 'text', model: fullName, disabled: isFormDisabled, inputAction: () => fullName.value = normalizeSpacing(capitalizeWords(fullName.value.toLowerCase())) }, // class can be added //
+		{ label: 'Full Name', name: 'full-name', type: 'text', model: fullName, disabled: isFormDisabled, inputAction: () => fullName.value = normalizeSpacing(capitalizeWords(sanitize(fullName.value.toLowerCase()))) }, // class can be added //
 		{ label: 'Email', name: 'email', type: 'email', model: email, disabled: isFormDisabled, inputAction: () => email.value = removeAllSpaces(email.value.toLowerCase()) },
 		{ label: 'Password', name: 'password', type: passwordFieldTpe, model: password, disabled: isFormDisabled },
 		{ label: 'Confirm Password', name: 'confirm-password', type: passwordFieldTpe, model: confirmPassword, disabled: isFormDisabled },

@@ -50,7 +50,7 @@
 
 	const { updateWatchlistDataById, refetchWatchlists } = useWatchlistStore()
 
-	const { normalizeSpacing } = utils
+	const { normalizeSpacing, sanitize } = utils
 
 	const title = ref('')
 	const isPublic = ref(true)
@@ -62,7 +62,7 @@
 	// form fields
 	// prettier-ignore
 	const fields = [
-		{ label: 'Watchlist Title', name: 'title', type: 'text', model: title, disabled: isFormDisabled, inputAction: () => title.value = normalizeSpacing(title.value) },
+		{ label: 'Watchlist Title', name: 'title', type: 'text', model: title, disabled: isFormDisabled, inputAction: () => title.value = normalizeSpacing(sanitize(title.value)) },
 	]
 
 	const submitButton = {

@@ -23,6 +23,11 @@ export const capitalizeWords = (words) => {
 	return separateWord.join(' ')
 }
 
+export const sanitize = (input) => {
+	const disallowedChars = /['"%<>_&\-`;\(\)\/]/g
+	return input.replace(disallowedChars, '')
+}
+
 export const removeUnderscores = (str) => {
 	return str.replace(/_/g, ' ')
 }

@@ -1,5 +1,6 @@
 <template>
-	<section class="col-12 my-4">
+	<nothing-found-indicator v-if="noSearchResult || (isAllDataFetched && movies.data?.length === 0)" />
+	<section v-else class="col-12 my-4">
 		<div class="container-fluid container-fluid-xxl py-2 px-3 px-sm-5 row g-0 m-auto">
 			<!-- prettier-ignore -->
 			<movie-card
@@ -26,6 +27,7 @@
 <script setup>
 	import LoadMoreButton from '@/components/buttons/LoadMoreButton.vue'
 	import MovieCard from '@/components/cards/MovieCard.vue'
+	import NothingFoundIndicator from '@/components/indicators/NothingFoundIndicator.vue'
 
 	import { storeToRefs } from 'pinia'
 	import { onBeforeMount } from 'vue'
@@ -36,7 +38,8 @@
 
 	const { updateSearchQuery, activeSortOptions } = useSortStore()
 	const { getWatchlistMovies, changeWatchlistId } = useMovieStore()
-	const { movies, currentWatchlist, isFetching, isAllDataFetched, isInitialFetchDone } = storeToRefs(useMovieStore())
+	// prettier-ignore
+	const { movies, currentWatchlist, isFetching, isAllDataFetched, isInitialFetchDone, noSearchResult } = storeToRefs(useMovieStore())
 
 	onBeforeMount(async () => {
 		// if there is search value reset

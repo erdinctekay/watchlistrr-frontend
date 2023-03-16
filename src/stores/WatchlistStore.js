@@ -31,6 +31,7 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 
 	const isAllDataFetched = ref(null)
 	const isInitialFetchDone = ref(null)
+	const noSearchResult = ref(null)
 
 	watch(queryOptions, (newValue) => {
 		const { currentPage } = useRouteStore()
@@ -76,6 +77,7 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 			lastPage.value = Math.ceil(response.headers.get('x-total-count') / limit)
 
 			const success = response.ok
+			const status = response.status
 			const data = success ? await response.json() : null
 
 			// add some delay and give time to showing loading indicator
@@ -84,11 +86,17 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 			})()
 
 			// if request not completed with success decrement page number
-			page.value = success ? page.value : page.value--
+			page.value = success ? page.value : --page.value
 			// re-check if all data fetched or not
 			if (lastPage.value && lastPage.value <= page.value) isAllDataFetched.value = true
 			// if first page successfully retrived remove flag
 			if (page.value !== 0 && success) isInitialFetchDone.value = true
+			// if there is search and status 404 means all fetched
+			if (status === 404 && queryOptions.searchQuery?.length > 0) noSearchResult.value = true
+			// else search found
+			if (success && queryOptions.searchQuery?.length > 0) noSearchResult.value = false
+			// if there is no watchlist record find by user
+			if (routerWatchlistsBy.value !== 'all' && status === 404 && page.value === 0) isAllDataFetched.value = true
 			// set fetching flag back to false
 			isFetching.value = false
 
@@ -112,6 +120,7 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 		lastPage.value = null
 		isAllDataFetched.value = null
 		isInitialFetchDone.value = null
+		noSearchResult.value = null
 	}
 
 	const changeWatchlistsBy = async (id) => {
@@ -180,5 +189,6 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 		isAllDataFetched,
 		isInitialFetchDone,
 		refetchWatchlists,
+		noSearchResult,
 	}
 })

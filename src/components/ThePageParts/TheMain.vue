@@ -1,5 +1,5 @@
 <template>
-	<main style="min-height: 100vh">
+	<main class="pb-4" style="min-height: calc((calc(1 / var(--zoom-ratio) * 100vh) - var(--footer-height)))">
 		<router-view />
 	</main>
 </template>

@@ -51,7 +51,7 @@
 		}
 
 		// get initial data
-		if (!isInitialFetchDone.value) await getWatchlists(currentPage.params.id)
+		if (!isInitialFetchDone.value && !isAllDataFetched.value) await getWatchlists(currentPage.params.id)
 	})
 </script>
 

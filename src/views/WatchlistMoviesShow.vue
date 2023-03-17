@@ -55,7 +55,7 @@
 		// if there is search value reset
 		if (activeSortOptions.updateSearchQuery !== '') updateSearchQuery('')
 		// get initial data
-		if (!isInitialFetchDone.value) await getWatchlistMovies()
+		if (!isInitialFetchDone.value && !isAllDataFetched.value) await getWatchlistMovies()
 	})
 </script>
 

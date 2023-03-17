@@ -48,7 +48,7 @@
 		}
 
 		// get initial data
-		if (!isInitialFetchDone.value) getWatchlists('all')
+		if (!isInitialFetchDone.value && !isAllDataFetched.value) getWatchlists('all')
 	})
 </script>
 

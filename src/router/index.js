@@ -101,6 +101,14 @@ const routes = [
 		},
 	},
 	{
+		path: '/auth/verify',
+		name: 'verify',
+		component: () => import('@/views/auth/Verify.vue'),
+		meta: {
+			requiresAuth: true,
+		},
+	},
+	{
 		path: '/auth/forgot-password',
 		name: 'forgotPassword',
 		component: () => import('@/views/auth/ForgotPassword.vue'),
@@ -133,22 +141,41 @@ const authPaths = ['login', 'logout', 'register', 'forgot-password']
 
 // restrict routes before enter
 router.beforeEach(async (to, from, next) => {
-	let { fetchUser } = useAuthStore()
+	const { fetchUser } = useAuthStore()
 	await fetchUser()
+
+	const { isAuthenticated, isEmailVerified } = useAuthStore()
 
 	// should be next()
 	const returnPage = (page) => {
 		next({ name: page })
 	}
 
-	// to.name === 'logout'
-	// to.matched.some((record) => record.meta.requiresAuth
-	if (to.meta.requiresNotAuth && useAuthStore().isAuthenticated) {
-		return returnPage('home')
-	}
+	if (isAuthenticated === null || isAuthenticated === undefined) return
 
-	if (to.meta.requiresAuth && !useAuthStore().isAuthenticated) {
-		return returnPage('home')
+	// route protection by auth status
+	if (isAuthenticated) {
+		// authenticated but not verified user can only go verify page
+		const allowedRoutes = ['verify', 'logout']
+
+		if (!isEmailVerified && !allowedRoutes.includes(to.name)) {
+			return returnPage('verify')
+		}
+
+		// authenticated and verified user can not go verify page anymore
+		if (isEmailVerified && to.name === 'verify') {
+			return returnPage('home')
+		}
+
+		// authenticated user can not get routes requires not auth (like login, register etc.)
+		if (to.meta.requiresNotAuth) {
+			return returnPage('home')
+		}
+	} else {
+		// not authenticated user can not get routes need auth
+		if (to.meta.requiresAuth) {
+			return returnPage('home')
+		}
 	}
 
 	// redirect auth related paths to auth/path

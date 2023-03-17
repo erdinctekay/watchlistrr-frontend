@@ -79,12 +79,18 @@ export const useAuthStore = defineStore('auth', () => {
 	}
 
 	const sendVerificationEmail = async (user) => {
-		await sendEmailVerification(user)
+		try {
+			await sendEmailVerification(user)
+			return true
+		} catch (error) {
+			console.log(error)
+			return false
+		}
 	}
 
-	const sendVerificationEmailAgain = async () => {
+	const resendVerificationEmail = async () => {
 		if (isAuthenticated) {
-			await sendVerificationEmail(currentUser.value)
+			return await sendVerificationEmail(currentUser.value)
 		}
 	}
 
@@ -128,6 +134,7 @@ export const useAuthStore = defineStore('auth', () => {
 
 	const isAuthenticated = computed(() => !!currentUser.value)
 	const userCredentials = computed(() => currentUser.value)
+	const isEmailVerified = computed(() => currentUser.value?.emailVerified)
 
 	/* getters end */
 
@@ -136,7 +143,7 @@ export const useAuthStore = defineStore('auth', () => {
 
 	watch(isAuthenticated, async (newValue, oldValue) => {
 		if (newValue !== oldValue) clearWathclistData()
-		if (newValue === true) await getInteractions(currentUser.value.uid)
+		if (newValue === true && isEmailVerified.value) await getInteractions(currentUser.value.uid)
 	})
 	/* to do when auth status change */
 
@@ -148,6 +155,7 @@ export const useAuthStore = defineStore('auth', () => {
 		isAuthenticated,
 		userCredentials,
 		isFetching,
-		sendVerificationEmailAgain,
+		resendVerificationEmail,
+		isEmailVerified,
 	}
 })

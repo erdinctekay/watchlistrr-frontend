@@ -28,6 +28,7 @@
 			<div
 				class="d-flex justify-content-start align-items-center text-muted btn-standart hover-none p-1 ps-3"
 				:class="`${isAuthorized ? 'rounded-end-3' : 'rounded-3'}`"
+				style="min-width: 150px"
 			>
 				<div class="watchlist-info d-flex flex-column me-3" style="position: relative; max-width: 10.5rem">
 					<div class="d-flex justify-content-between">
@@ -38,8 +39,8 @@
 							{{
 								isHomePage || isUserWatchlistsPage
 									? isHomePage
-										? 'Watchlists'
-										: 'User Watchlists'
+										? 'Public Watchlists'
+										: currentWatchlistsBy?.displayName || ' '
 									: currentWatchlist?.title
 							}}
 						</span>
@@ -50,7 +51,7 @@
 						/>
 					</div>
 					<span
-						v-if="!isHomePage"
+						v-if="isWatchlistPage"
 						class="fst-italic small text-nowrap text-muted"
 						style="
 							color: var(--bs-secondary-color) !important;
@@ -71,8 +72,13 @@
 							"
 							class="hover-highlight-button text-body cursor-pointer text-decoration-underline"
 						>
-							{{ isUserWatchlistsPage ? currentWatchlistsBy?.displayName : currentWatchlist?.user.displayName }}
+							{{
+								isUserWatchlistsPage
+									? formatShortName(currentWatchlistsBy?.displayName)
+									: formatShortName(currentWatchlist?.user.displayName)
+							}}
 						</a>
+						<i> — {{ hasActiveSearch ? 'filtered' : 'all sorted' }} </i>
 					</span>
 					<span
 						v-else
@@ -86,8 +92,9 @@
 							max-width: inherit;
 						"
 					>
-						<i class="">all watchlists included </i>
-						<i class="d-none">all watchlists except yours </i>
+						<i>
+							{{ hasActiveSearch ? 'search filtered ' + source + 's' : 'all ' + source + 's sorted' }}
+						</i>
 					</span>
 				</div>
 			</div>
@@ -143,6 +150,7 @@
 	import { storeToRefs } from 'pinia'
 
 	import { router } from '@/helpers'
+	import { formatShortName } from '@/helpers/utils'
 
 	import { useMovieStore } from '@/stores/MovieStore'
 	import { useWatchlistStore } from '@/stores/WatchlistStore'
@@ -150,8 +158,8 @@
 
 	const { openModal } = useModalStore()
 
-	const { currentWatchlist } = storeToRefs(useMovieStore())
-	const { currentWatchlistsBy } = storeToRefs(useWatchlistStore())
+	const { currentWatchlist, hasActiveSearch: hasActiveMovieSearch } = storeToRefs(useMovieStore())
+	const { currentWatchlistsBy, hasActiveSearch: hasActiveWatchlistSearch } = storeToRefs(useWatchlistStore())
 
 	const { returnPage } = router
 
@@ -207,6 +215,16 @@
 		const isWatchlistPage = props.currentPage.name === 'watchlistMovies.show'
 
 		return isWatchlistPage ? isOwner : false
+	})
+
+	const source = computed(() => {
+		if (isHomePage.value || isUserWatchlistsPage.value) return 'watchlist'
+		if (isWatchlistPage.value) return 'movie'
+	})
+
+	const hasActiveSearch = computed(() => {
+		if (isHomePage.value || isUserWatchlistsPage.value) return hasActiveWatchlistSearch?.value
+		if (isWatchlistPage.value) return hasActiveMovieSearch?.value
 	})
 
 	onMounted(() => {

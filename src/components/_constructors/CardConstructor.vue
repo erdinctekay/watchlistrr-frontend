@@ -45,6 +45,7 @@
 															display: -webkit-box;
 															-webkit-box-orient: vertical;
 															padding-bottom: 3px !important;
+															min-height: 2.5rem;
 														"
 														:style="{
 															width: type === 'watchlist' ? `calc(100% - ${privateWatchlistIconWidth}px)` : `100%`,

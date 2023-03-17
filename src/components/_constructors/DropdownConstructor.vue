@@ -11,8 +11,13 @@
 		"
 	>
 		<ul class="list-group" v-for="object in dropdownObject" style="list-style-type: none">
-			<li v-if="object.defaults.showGroupName" class="mb-1">
-				<span class="small fw-bold px-3">{{ object.defaults.groupName }}</span>
+			<li v-if="object.defaults.showGroupName" class="mb-1" style="max-width: 180px">
+				<span
+					class="small fw-bold px-3 text-nowrap d-block"
+					style="text-overflow: ellipsis; overflow: hidden; white-space: pre; max-width: inherit"
+				>
+					{{ object.defaults.groupName }}
+				</span>
 			</li>
 			<li class="" v-for="item in object.items" :key="item.name">
 				<!-- prettier-ignore -->

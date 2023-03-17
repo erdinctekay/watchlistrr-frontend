@@ -16,7 +16,7 @@
 						class="btn-close"
 						data-bs-dismiss="modal"
 						aria-label="Close"
-						:disabled="item.successButton.disabled.value"
+						:disabled="item.successButton.disabled?.value"
 					></button>
 				</div>
 				<div class="modal-body-wrapper">
@@ -31,17 +31,18 @@
 						:mainClass="'rounded-pill px-2 p-1 my-1 text-light'"
 						:hasMainIcon="true"
 						:textClass="'small'"
-						:isDisabled="item.successButton.disabled.value"
+						:isDisabled="item.successButton.disabled?.value"
 					>
 						Close
 					</button-constructor>
 					<button-constructor
+						v-if="!item.successButton.hide"
 						@click="primaryAction"
 						:mainColor="'primary'"
 						:mainClass="'rounded-pill px-2 p-1 my-1 text-light'"
 						:hasMainIcon="true"
 						:textClass="'small'"
-						:isDisabled="item.successButton.disabled.value"
+						:isDisabled="item.successButton.disabled?.value"
 					>
 						{{ item.successButton.text.value || item.successButton.text }}
 					</button-constructor>

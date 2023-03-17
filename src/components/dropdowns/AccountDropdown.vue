@@ -17,7 +17,7 @@
 			:dataBsToggle="'dropdown'"
 			:ariaExpanded="false"
 		>
-			{{ userCredentials.displayName }}
+			{{ userCredentials?.displayName }}
 		</button-constructor>
 		<dropdown-constructor :dropdownObject="dropdownObject" :colorScheme="colorScheme" />
 	</div>
@@ -58,7 +58,7 @@
 	const dropdownObject = {
 		'Account Dropdown': {
 			defaults: {
-				groupName: `Welcome ${userCredentials.value.displayName.split(' ')[0]}`,
+				groupName: `Welcome ${userCredentials.value.displayName?.split(' ')[0]}`,
 				showGroupName: true,
 				mainClass: 'w-100 hover-highlight bg-opacity-50 text-body py-2',
 				textClass: 'uppercase-first-letter',

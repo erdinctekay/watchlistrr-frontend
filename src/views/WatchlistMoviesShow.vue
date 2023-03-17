@@ -30,33 +30,12 @@
 	import NothingFoundIndicator from '@/components/indicators/NothingFoundIndicator.vue'
 
 	import { storeToRefs } from 'pinia'
-	import { onBeforeMount } from 'vue'
 
 	import { useMovieStore } from '@/stores/MovieStore'
-	import { useRouteStore } from '@/stores/RouteStore'
-	import { useSortStore } from '@/stores/SortStore'
 
-	const { updateSearchQuery, activeSortOptions } = useSortStore()
-	const { getWatchlistMovies, changeWatchlistId } = useMovieStore()
+	const { getWatchlistMovies } = useMovieStore()
 	// prettier-ignore
 	const { movies, currentWatchlist, isFetching, isAllDataFetched, isInitialFetchDone, noSearchResult } = storeToRefs(useMovieStore())
-
-	onBeforeMount(async () => {
-		// if there is search value reset
-		if (activeSortOptions.updateSearchQuery !== '') updateSearchQuery('')
-
-		// if initial load made on this page - otherwise route helper takes care
-		if (!currentWatchlist.value) {
-			// set watchlist id to store
-			const { currentPage } = useRouteStore()
-			await changeWatchlistId(currentPage.params.id)
-		}
-
-		// if there is search value reset
-		if (activeSortOptions.updateSearchQuery !== '') updateSearchQuery('')
-		// get initial data
-		if (!isInitialFetchDone.value && !isAllDataFetched.value) await getWatchlistMovies()
-	})
 </script>
 
 <style></style>

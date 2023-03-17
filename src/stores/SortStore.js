@@ -7,7 +7,20 @@ export const useSortStore = defineStore('sort', () => {
 	const activeSortOptions = reactive({
 		sortFilterList: null,
 		sortFilterMovie: null,
-		searchQuery: '',
+		searchQuery: {
+			movie: {
+				value: '',
+				triggeredBy: null,
+			},
+			watchlist: {
+				value: '',
+				triggeredBy: null,
+			},
+			tmdb: {
+				value: '',
+				triggeredBy: null,
+			},
+		},
 	})
 
 	// defaults
@@ -16,8 +29,12 @@ export const useSortStore = defineStore('sort', () => {
 		sortFilterMovie: 'createdAt desc',
 	}
 
-	const updateSearchQuery = (value) => {
-		activeSortOptions.searchQuery = value
+	const updateSearchQuery = (value, source, triggeredBy = null) => {
+		console.log('search query updated for ' + source)
+
+		activeSortOptions.searchQuery[source] = { value: value, triggeredBy: triggeredBy }
+
+		console.log(source + ' SEARCH: ' + value)
 	}
 
 	const changeSortOptions = async (type, value) => {

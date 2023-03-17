@@ -28,7 +28,6 @@
 	import NothingFoundIndicator from '@/components/indicators/NothingFoundIndicator.vue'
 
 	import { storeToRefs } from 'pinia'
-	import { onBeforeMount } from 'vue'
 
 	import { router } from '@/helpers/'
 
@@ -36,23 +35,11 @@
 	import { useRouteStore } from '@/stores/RouteStore'
 
 	const { currentPage } = useRouteStore()
-	const { getWatchlists, changeWatchlistsBy } = useWatchlistStore()
+	const { getWatchlists } = useWatchlistStore()
 	// prettier-ignore
-	const { watchlists, currentWatchlistsBy, isFetching, isAllDataFetched, isInitialFetchDone, noSearchResult } = storeToRefs(useWatchlistStore())
+	const { watchlists, isFetching, isAllDataFetched, isInitialFetchDone, noSearchResult } = storeToRefs(useWatchlistStore())
 
 	const { returnPage } = router
-
-	onBeforeMount(async () => {
-		// if initial load made on this page - otherwise route helper takes care
-		if (!currentWatchlistsBy.value || currentWatchlistsBy.value === 'all') {
-			console.log('initial page load')
-			// set watchlist id to store
-			await changeWatchlistsBy(currentPage.params.id)
-		}
-
-		// get initial data
-		if (!isInitialFetchDone.value && !isAllDataFetched.value) await getWatchlists(currentPage.params.id)
-	})
 </script>
 
 <style></style>

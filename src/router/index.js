@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
+
 import { useAuthStore } from '@/stores/AuthStore'
 import { useRouteStore } from '@/stores/RouteStore'
-
-import { watchlist } from '@/services/backend'
-import { user } from '@/services/backend'
+import { useSortStore } from '@/stores/SortStore'
+import { useMovieStore } from '@/stores/MovieStore'
+import { useWatchlistStore } from '@/stores/WatchlistStore'
 
 const routes = [
 	{
@@ -14,6 +15,12 @@ const routes = [
 		path: '/watchlists',
 		name: 'home',
 		component: () => import('@/views/Home.vue'),
+		async beforeEnter(to, from) {
+			console.log('entering: ' + to.name)
+
+			const { changeWatchlistsBy } = useWatchlistStore()
+			const response = await changeWatchlistsBy('all')
+		},
 		meta: {
 			requiresSorting: true,
 		},
@@ -24,7 +31,8 @@ const routes = [
 		name: 'userWatchlists.show',
 		component: () => import('@/views/UserWatchlistsShow.vue'),
 		async beforeEnter(to, from) {
-			const response = await user.get(to.params.id)
+			const { changeWatchlistsBy } = useWatchlistStore()
+			const response = await changeWatchlistsBy(to.params.id)
 
 			const embeded404 = {
 				name: '404',
@@ -33,7 +41,7 @@ const routes = [
 				hash: to.hash,
 			}
 
-			if (!response.ok) return embeded404
+			if (!response) return embeded404
 		},
 		meta: {
 			requiresSorting: true,
@@ -45,7 +53,8 @@ const routes = [
 		name: 'watchlistMovies.show',
 		component: () => import('@/views/WatchlistMoviesShow.vue'),
 		async beforeEnter(to, from) {
-			const response = await watchlist.get(to.params.id)
+			const { changeWatchlistId } = useMovieStore()
+			const response = await changeWatchlistId(to.params.id)
 
 			const embeded404 = {
 				name: '404',
@@ -54,7 +63,7 @@ const routes = [
 				hash: to.hash,
 			}
 
-			if (!response.ok) return embeded404
+			if (!response) return embeded404
 		},
 		meta: {
 			requiresSorting: true,
@@ -141,6 +150,12 @@ const authPaths = ['login', 'logout', 'register', 'forgot-password']
 
 // restrict routes before enter
 router.beforeEach(async (to, from, next) => {
+	const { isFetching: isFetchingMovies } = useMovieStore()
+	const { isFetching: isFetchingWatchlists } = useWatchlistStore()
+
+	// prevent page changing if active fetch not resolved
+	if (isFetchingWatchlists || isFetchingMovies) return next(false)
+
 	const { fetchUser } = useAuthStore()
 	await fetchUser()
 
@@ -151,7 +166,7 @@ router.beforeEach(async (to, from, next) => {
 		next({ name: page })
 	}
 
-	if (isAuthenticated === null || isAuthenticated === undefined) return
+	if (isAuthenticated === null || isAuthenticated === undefined) next(false)
 
 	// route protection by auth status
 	if (isAuthenticated) {

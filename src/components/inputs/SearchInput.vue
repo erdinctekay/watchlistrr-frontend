@@ -45,6 +45,7 @@
 </template>
 <script setup>
 	import { ref } from 'vue'
+	import { storeToRefs } from 'pinia'
 	import { utils } from '@/helpers'
 	import { useSortStore } from '@/stores/SortStore'
 
@@ -52,14 +53,24 @@
 
 	const searchQuery = ref()
 
+	const { currentPage } = storeToRefs(props)
+
 	const searchAction = () => {
 		searchQuery.value = normalizeSpacing(sanitize(searchQuery.value))
 		let searchValue = searchQuery.value
 
-		setTimeout(() => {
+		setTimeout(async () => {
 			if (searchValue === searchQuery.value) {
 				const { updateSearchQuery } = useSortStore()
-				updateSearchQuery(searchValue)
+
+				if (props.searchSource === 'tmdb') {
+					return updateSearchQuery(searchValue, 'tmdb')
+				} else {
+					// prettier-ignore
+					if (props.currentPage.name === 'home' || props.currentPage.name === 'userWatchlists.show') return updateSearchQuery(searchValue, 'watchlist', 'userInput')
+					// prettier-ignore
+					if (props.currentPage.name === 'watchlistMovies.show') return updateSearchQuery(searchValue, 'movie', 'userInput')
+				}
 			}
 		}, 700)
 	}
@@ -72,6 +83,10 @@
 		currentPage: {
 			type: Object,
 			required: true,
+		},
+		searchSource: {
+			type: String,
+			default: 'db',
 		},
 		placeholder: {
 			type: String,

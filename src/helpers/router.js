@@ -1,6 +1,4 @@
 import router from '@/router'
-import { useMovieStore } from '@/stores/MovieStore'
-import { useWatchlistStore } from '@/stores/WatchlistStore'
 
 export const routerReadyCallback = async () => {
 	await new Promise((resolve, reject) => {
@@ -11,7 +9,7 @@ export const routerReadyCallback = async () => {
 	})
 }
 
-let newPageValue = null
+export let newPageValue = null
 
 export const pageChangedCallback = async () => {
 	await new Promise((resolve, reject) => {
@@ -46,16 +44,6 @@ export const returnPage = (pageName, id) => {
 	if (id) {
 		// do not reload same page without force
 		if (id === currentId) return
-
-		if (pageName === 'watchlistMovies.show') {
-			const { changeWatchlistId } = useMovieStore()
-			changeWatchlistId(id)
-		}
-
-		if (pageName === 'userWatchlists.show') {
-			const { changeWatchlistsBy } = useWatchlistStore()
-			changeWatchlistsBy(id)
-		}
 
 		return router.push({ name: pageName, params: { id: id } })
 	} else {

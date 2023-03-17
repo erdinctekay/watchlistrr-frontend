@@ -11,13 +11,15 @@ export const useMovieStore = defineStore('movie', () => {
 	const { activeSortOptions, updateSearchQuery } = useSortStore()
 
 	const movies = reactive({ data: [], watchlistId: null })
+	// for search on tmdb
+	const selectedMovies = reactive({ data: [] })
 
 	const page = ref(0)
 	const limit = 1
 	const queryOptions = reactive({
 		sortFilter: computed(() => activeSortOptions.sortFilterMovie?.split(' ')[0]),
 		sortOrder: computed(() => activeSortOptions.sortFilterMovie?.split(' ')[1]),
-		searchQuery: computed(() => activeSortOptions.searchQuery),
+		searchQuery: computed(() => activeSortOptions.searchQuery.movie),
 	})
 	const lastPage = ref(null)
 	const isFetching = ref(false)
@@ -30,17 +32,28 @@ export const useMovieStore = defineStore('movie', () => {
 	const isInitialFetchDone = ref(null)
 	const noSearchResult = ref(null)
 
-	watch(queryOptions, (newValue) => {
-		const { currentPage } = useRouteStore()
+	watch(
+		() => queryOptions.searchQuery,
+		(newValue, oldValue) => {
+			// if same search value return
+			if (newValue.value === oldValue.value) return
+			// if change not triggered by user input return
+			if (newValue.triggeredBy === null) return
 
-		if (currentPage.name === 'watchlistMovies.show') {
-			console.log('movie refetch')
+			console.log('movie refetch triggered due to search query change')
 			refetchMovies()
-		}
-	})
+		},
+		{ deep: true }
+	)
 
-	// quick patch for search value reset on different watchlistsBy pages+
-	const lastFetchedWatchlistId = ref(null)
+	watch(
+		() => queryOptions.sort,
+		() => {
+			console.log('movie refetch triggered due to sort query change')
+			refetchMovies()
+		},
+		{ deep: true }
+	)
 
 	const getWatchlistMovies = async () => {
 		try {
@@ -50,18 +63,11 @@ export const useMovieStore = defineStore('movie', () => {
 			if (lastPage.value && lastPage.value <= page.value) return (isAllDataFetched.value = true)
 			if (isFetching.value) return
 
-			// if page changed since last fetch - reset searchQuery (it will trigger refetch)
-			if (lastFetchedWatchlistId.value !== movies.watchlistId) {
-				// only trigger if it's empty - RETURN
-				if (activeSortOptions.searchQuery !== '') return updateSearchQuery('')
-			}
-
-			lastFetchedWatchlistId.value = movies.watchlistId
 			isFetching.value = true
 			page.value++
 
 			// prettier-ignore
-			const response = await movie.getAllByWatchlist(queryOptions.sortFilter, queryOptions.sortOrder, page.value, limit, queryOptions.searchQuery)
+			const response = await movie.getAllByWatchlist(queryOptions.sortFilter, queryOptions.sortOrder, page.value, limit, queryOptions.searchQuery.value)
 			lastPage.value = Math.ceil(response.headers.get('x-total-count') / limit)
 
 			const success = response.ok
@@ -78,11 +84,11 @@ export const useMovieStore = defineStore('movie', () => {
 			// re-check if all data fetched or not
 			if (lastPage.value && lastPage.value <= page.value) isAllDataFetched.value = true
 			// if page first page successfully retrived remove flag
-			if (page.value !== 0 && success) isInitialFetchDone.value = true
+			if (page.value > 0 && success) isInitialFetchDone.value = true
 			// if there is search and status 404 means all fetched
-			if (status === 404 && queryOptions.searchQuery?.length > 0) noSearchResult.value = true
+			if (status === 404 && queryOptions.searchQuery.value?.length > 0) noSearchResult.value = true
 			// else search found
-			if (success && queryOptions.searchQuery?.length > 0) noSearchResult.value = false
+			if (success && queryOptions.searchQuery.value?.length > 0) noSearchResult.value = false
 			// set fetching flag back to false
 			isFetching.value = false
 
@@ -101,6 +107,7 @@ export const useMovieStore = defineStore('movie', () => {
 	}
 
 	const clearMovieData = () => {
+		console.log('movie data cleared')
 		movies.data = []
 		page.value = 0
 		lastPage.value = null
@@ -110,8 +117,14 @@ export const useMovieStore = defineStore('movie', () => {
 	}
 
 	const changeWatchlistId = async (id) => {
+		// if same page (without active search) do not refetch but return true for router
+		if (id === routerWatchlistId.value && !hasActiveSearch.value) return true
+
 		// get new watchlist id from router
 		const response = await watchlist.get(id)
+		const success = response.ok
+		// will return false for router to get if page really exist
+		if (!success) return false
 		const data = await response.json()
 		currentWatchlist.value = response.ok ? data : null
 		routerWatchlistId.value = id
@@ -119,6 +132,14 @@ export const useMovieStore = defineStore('movie', () => {
 		// reset all
 		clearMovieData()
 		movies.watchlistId = routerWatchlistId.value
+
+		updateSearchQuery('', 'movie')
+
+		// make initial fetch
+		if (!isInitialFetchDone.value && !isAllDataFetched.value) await getWatchlistMovies(id)
+
+		// return true for router
+		return true
 	}
 
 	const updateCurrentWatchlistData = (item) => {
@@ -133,6 +154,8 @@ export const useMovieStore = defineStore('movie', () => {
 		await getWatchlistMovies()
 	}
 
+	const hasActiveSearch = computed(() => queryOptions.searchQuery.value !== '')
+
 	return {
 		movies,
 		getWatchlistMovies,
@@ -145,5 +168,6 @@ export const useMovieStore = defineStore('movie', () => {
 		isInitialFetchDone,
 		refetchMovies,
 		noSearchResult,
+		hasActiveSearch,
 	}
 })

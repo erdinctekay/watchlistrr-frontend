@@ -7,7 +7,6 @@ import { user } from '@/services/backend/'
 import { router } from '@/helpers'
 
 import { useSortStore } from '@/stores/SortStore'
-import { useRouteStore } from '@/stores/RouteStore'
 import { useMovieStore } from '@/stores/MovieStore'
 
 export const useWatchlistStore = defineStore('watchlist', () => {
@@ -18,9 +17,11 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 	const page = ref(0)
 	const limit = 1
 	const queryOptions = reactive({
-		sortFilter: computed(() => activeSortOptions.sortFilterList?.split(' ')[0]),
-		sortOrder: computed(() => activeSortOptions.sortFilterList?.split(' ')[1]),
-		searchQuery: computed(() => activeSortOptions.searchQuery),
+		sort: {
+			sortFilter: computed(() => activeSortOptions.sortFilterList?.split(' ')[0]),
+			sortOrder: computed(() => activeSortOptions.sortFilterList?.split(' ')[1]),
+		},
+		searchQuery: computed(() => activeSortOptions.searchQuery.watchlist),
 	})
 	const lastPage = ref(null)
 	const isFetching = ref(false)
@@ -33,43 +34,48 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 	const isInitialFetchDone = ref(null)
 	const noSearchResult = ref(null)
 
-	watch(queryOptions, (newValue) => {
-		const { currentPage } = useRouteStore()
+	watch(
+		() => queryOptions.searchQuery,
+		(newValue, oldValue) => {
+			// if same search value return
+			if (newValue.value === oldValue.value) return
+			// if change not triggered by user input return
+			if (newValue.triggeredBy === null) return
 
-		console.log(currentPage)
-		if (currentPage.name === 'userWatchlists.show' || currentPage.name === 'home') {
-			console.log('watchlist refetch due to query change')
+			console.log('watchlist refetch triggered due to search query change')
 			refetchWatchlists()
-		}
-	})
+		},
+		{ deep: true }
+	)
 
-	// quick patch for search value reset on different watchlistsBy pages+
-	const lastFetchedWatchlistsBy = ref()
+	watch(
+		() => queryOptions.sort,
+		() => {
+			console.log('watchlist refetch triggered due to sort query change')
+			refetchWatchlists()
+		},
+		{ deep: true }
+	)
 
 	const getWatchlists = async (id) => {
 		try {
-			if (routerWatchlistsBy.value !== 'all' && currentWatchlistsBy.value.watchlistCount === 0)
-				return (isAllDataFetched.value = true)
+			console.log('fetch blocked: ' + isFetching.value)
+			// prettier-ignore
+			if (routerWatchlistsBy.value !== 'all' && currentWatchlistsBy.value.watchlistCount === 0) return (isAllDataFetched.value = true)
 			if (lastPage.value && lastPage.value <= page.value) return (isAllDataFetched.value = true)
+
 			if (isFetching.value) return
 
-			// if page changed since last fetch - reset searchQuery (it will trigger refetch)
-			if (!isInitialFetchDone.value && lastFetchedWatchlistsBy.value !== watchlists.watchlistsBy) {
-				// only trigger if it's empty - RETURN
-				if (activeSortOptions.searchQuery !== '') return updateSearchQuery('')
-			}
-
-			lastFetchedWatchlistsBy.value = watchlists.watchlistsBy
 			isFetching.value = true
 			page.value++
 
 			// prettier-ignore
 			const decideResponse = async () => {
 				let response
-				if (watchlists.watchlistsBy === 'all' && id === 'all') 
-					response = await watchlist.getAll(queryOptions.sortFilter, queryOptions.sortOrder, page.value, limit, queryOptions.searchQuery)
-				if (watchlists.watchlistsBy !== 'all' && id !== 'all') 
-					response = await user.getWatchlistsByUser(id, queryOptions.sortFilter, queryOptions.sortOrder, page.value, limit, queryOptions.searchQuery)
+				if (watchlists.watchlistsBy === 'all' && id === 'all' && page.value > 0) 
+					response = await watchlist.getAll(queryOptions.sort.sortFilter, queryOptions.sort.sortOrder, page.value, limit, queryOptions.searchQuery.value)
+				if (watchlists.watchlistsBy !== 'all' && id !== 'all' && page.value > 0) 
+					response = await user.getWatchlistsByUser(id, queryOptions.sort.sortFilter, queryOptions.sort.sortOrder, page.value, limit, queryOptions.searchQuery.value)
 				return response
 			}
 
@@ -90,11 +96,11 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 			// re-check if all data fetched or not
 			if (lastPage.value && lastPage.value <= page.value) isAllDataFetched.value = true
 			// if first page successfully retrived remove flag
-			if (page.value !== 0 && success) isInitialFetchDone.value = true
+			if (page.value > 0 && success) isInitialFetchDone.value = true
 			// if there is search and status 404 means all fetched
-			if (status === 404 && queryOptions.searchQuery?.length > 0) noSearchResult.value = true
+			if (status === 404 && queryOptions.searchQuery.value?.length > 0) noSearchResult.value = true
 			// else search found
-			if (success && queryOptions.searchQuery?.length > 0) noSearchResult.value = false
+			if (success && queryOptions.searchQuery.value?.length > 0) noSearchResult.value = false
 			// if there is no watchlist record find by user
 			if (routerWatchlistsBy.value !== 'all' && status === 404 && page.value === 0) isAllDataFetched.value = true
 			// set fetching flag back to false
@@ -115,6 +121,7 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 	}
 
 	const clearWathclistData = () => {
+		console.log('watchlist data cleared')
 		watchlists.data = []
 		page.value = 0
 		lastPage.value = null
@@ -124,6 +131,9 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 	}
 
 	const changeWatchlistsBy = async (id) => {
+		// if same page (without active search) do not refetch but return true for router
+		if (id === routerWatchlistsBy.value && !hasActiveSearch.value) return true
+
 		if (id === 'all') {
 			currentWatchlistsBy.value = 'all'
 			routerWatchlistsBy.value = 'all'
@@ -132,6 +142,9 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 		} else {
 			// get new watchlist id from router
 			const response = await user.get(id)
+			const success = response.ok
+			// will return false for router to get if page really exist
+			if (!success) return false
 			const data = await response.json()
 			currentWatchlistsBy.value = response.ok ? data : null
 			routerWatchlistsBy.value = id
@@ -142,7 +155,14 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 		// reset all
 		clearWathclistData()
 		watchlists.watchlistsBy = routerWatchlistsBy.value
-		return
+
+		updateSearchQuery('', 'watchlist')
+
+		// make initial fetch
+		if (!isInitialFetchDone.value && !isAllDataFetched.value) await getWatchlists(id)
+
+		// return true for router
+		return true
 	}
 
 	const updateWatchlistDataById = (item, message = null) => {
@@ -178,6 +198,8 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 		await getWatchlists(routerWatchlistsBy.value)
 	}
 
+	const hasActiveSearch = computed(() => queryOptions.searchQuery.value !== '')
+
 	return {
 		watchlists,
 		getWatchlists,
@@ -190,5 +212,6 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 		isInitialFetchDone,
 		refetchWatchlists,
 		noSearchResult,
+		hasActiveSearch,
 	}
 })

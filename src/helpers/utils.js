@@ -24,8 +24,46 @@ export const capitalizeWords = (words) => {
 }
 
 export const sanitize = (input) => {
-	const disallowedChars = /['"%<>_&\-`;\(\)\/]/g
+	const disallowedChars = /['"%<>_&`;\(\)\/]/g
 	return input.replace(disallowedChars, '')
+}
+
+export const formatShortName = (fullName) => {
+	let nameArray = fullName.split(' ')
+	let firstName = nameArray[0]
+	let lastName = nameArray[nameArray.length - 1]
+	let middleInitials = ''
+
+	// Check if there are middle names/initials
+	if (nameArray.length > 2) {
+		for (let i = 1; i < nameArray.length - 1; i++) {
+			middleInitials += nameArray[i].charAt(0).toUpperCase() + '.'
+		}
+	}
+
+	return firstName + ' ' + middleInitials + ' ' + lastName
+}
+
+export const limitMaxLength = (value, maxLength) => {
+	if (value.length > maxLength) {
+		return value.substring(0, maxLength)
+	}
+	return value
+}
+
+export const limitWordLength = (inputString, maxWordLength = 11) => {
+	const words = inputString.split(' ')
+	const limitedWords = words.map((word) => {
+		if (word.length > maxWordLength) {
+			return word.substring(0, maxWordLength)
+		}
+		return word
+	})
+	const limitedString = limitedWords.join(' ')
+	if (limitedString.length > inputString.length) {
+		return inputString
+	}
+	return limitedString
 }
 
 export const removeUnderscores = (str) => {

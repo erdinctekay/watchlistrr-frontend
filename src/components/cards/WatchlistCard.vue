@@ -39,7 +39,7 @@
 				<!-- <div class="pt-1 pb-2 text-muted fst-italic small">
 					Created by:
 					<span class="fst-italic text-body hover-highlight-button cursor-pointer text-decoration-underline">
-						<a>{{ item.user.displayName }}</a>
+						<a>{{ formatShortName(item.user.displayName) }}</a>
 					</span>
 				</div> -->
 
@@ -54,7 +54,7 @@
 					:afterImageClass="'rounded-circle'"
 					:afterImageStyle="`padding:3px; ${colorScheme === 'light' ? 'filter: brightness(1.1) contrast(.85);' : ''}`"
 				>
-					{{ item.user.displayName }}
+					{{ formatShortName(item.user.displayName) }}
 				</button-constructor>
 
 				<!-- <button-constructor
@@ -67,7 +67,7 @@
 					:beforeImageClass="'rounded-circle ps-0'"
 					:beforeImageStyle="`padding:3px; ${colorScheme === 'light' ? 'filter: brightness(1.1) contrast(.85);' : ''}`"
 				>
-					{{ item.user.displayName }}
+					{{ formatShortName(item.user.displayName) }}
 				</button-constructor> -->
 			</div>
 		</template>
@@ -79,6 +79,7 @@
 
 	import { utils } from '@/helpers'
 	import { router } from '@/helpers'
+	import { formatShortName } from '@/helpers/utils'
 
 	import { storeToRefs } from 'pinia'
 	import { computed } from 'vue'

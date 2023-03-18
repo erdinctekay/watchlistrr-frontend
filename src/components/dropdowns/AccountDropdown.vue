@@ -17,7 +17,7 @@
 			:dataBsToggle="'dropdown'"
 			:ariaExpanded="false"
 		>
-			{{ userCredentials?.displayName }}
+			{{ formatShortName(userCredentials?.displayName) }}
 		</button-constructor>
 		<dropdown-constructor :dropdownObject="dropdownObject" :colorScheme="colorScheme" />
 	</div>
@@ -27,6 +27,8 @@
 	import DropdownConstructor from '@/components/_constructors/DropdownConstructor.vue'
 
 	import { router } from '@/helpers'
+	import { formatShortName } from '@/helpers/utils'
+
 	import { storeToRefs } from 'pinia'
 	const { userCredentials } = storeToRefs(props)
 	const { returnPage } = router

@@ -30,6 +30,7 @@
 	import { formatShortName } from '@/helpers/utils'
 
 	import { storeToRefs } from 'pinia'
+
 	const { userCredentials } = storeToRefs(props)
 	const { returnPage } = router
 
@@ -46,10 +47,16 @@
 
 	const accountDropdown = [
 		{
+			label: 'Your Watchlists',
+			name: 'watchlists',
+			action: () => returnPage('userWatchlists.show', userCredentials.value?.uid),
+		},
+		{
 			label: 'Account',
 			name: 'account',
 			action: () => returnPage('account'),
 		},
+
 		{
 			label: 'Logout',
 			name: 'logout',

@@ -120,6 +120,14 @@ export const getNumberFromString = (str) => {
 	return parseInt(match[0], 10)
 }
 
+export const getRandomNumber = (length) => {
+	let randomNumber = ''
+	for (let i = 0; i < length; i++) {
+		randomNumber += Math.floor(Math.random() * 10)
+	}
+	return randomNumber
+}
+
 export const formatCount = (count, unit, unitPlural) => {
 	if (!unitPlural) unitPlural = `${unit}s`
 

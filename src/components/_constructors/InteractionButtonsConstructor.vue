@@ -6,13 +6,14 @@
 		:key="item.name"
 		:mainColor="item.mainColor || interactionObject.value[type].defaults.mainColor || interactionObject.value.defaults.mainColor"
 		:mainClass="item.mainClass || interactionObject.value[type].defaults.mainClass || interactionObject.value.defaults.mainClass"
+		:mainClassExtra="item.mainClassExtra"
 		:hasMainIcon="item.hasMainIcon || interactionObject.value[type].defaults.hasMainIcon || interactionObject.value.defaults.hasMainIcon"
 		:mainIcon="item.mainIcon || interactionObject.value[type].defaults.mainIcon || interactionObject.value.defaults.mainIcon"
 		:mainIconClass="item.mainIconClass || interactionObject.value[type].defaults.mainIconClass || interactionObject.value.defaults.mainIconClass"
 		:mainIconSize="item.mainIconSize || interactionObject.value[type].defaults.mainIconSize || interactionObject.value.defaults.mainIconSize"
 		:mainIconStyle="item.mainIconStyle || interactionObject.value[type].defaults.mainIconStyle || interactionObject.value.defaults.mainIconStyle"
 		:textClass="item.textClass || interactionObject.value[type].defaults.textClass || interactionObject.value.defaults.textClass"
-	>
+		>
 	</button-constructor>
 </template>
 <script setup>
@@ -47,20 +48,29 @@
 		isWatched: null,
 		isFavorited: null,
 		isFollowed: null,
+
+		isLikeDisabled: null,
+		isWatchDisabled: null,
+		isFavDisabled: null,
+		isFollowDisabled: null,
 	})
 
 	const updateInteractionData = () => {
 		const like = userInteractionData.value.likes.find((like) => like.movieId === props.item?.id)
 		interactionData.isLiked = like ? like.id : false
+		interactionData.isLikeDisabled = interactionData.isLiked && interactionData.isLiked.startsWith('temp_')
 
 		const watch = userInteractionData.value.watchs.find((watch) => watch.movieId === props.item?.id)
 		interactionData.isWatched = watch ? watch.id : false
+		interactionData.isWatchDisabled = interactionData.isWatched && interactionData.isWatched.startsWith('temp_')
 
 		const fav = userInteractionData.value.favs.find((fav) => fav.watchlistId === props.item?.id)
 		interactionData.isFavorited = fav ? fav.id : false
+		interactionData.isFavDisabled = interactionData.isFavorited && interactionData.isFavorited.startsWith('temp_')
 
 		const follow = userInteractionData.value.follows.find((follow) => follow.watchlistId === props.item?.id)
 		interactionData.isFollowed = follow ? follow.id : false
+		interactionData.isFollowDisabled = interactionData.isFollowed && interactionData.isFollowed.startsWith('temp_')
 	}
 
 	watchEffect(() => {
@@ -74,18 +84,24 @@
 			mainIconClass: computed(() => (!!interactionData.isLiked ? 'text-danger filled-icon colored' : 'filled-icon')),
 			mainIconSize: '1.275rem',
 			mainIconStyle: 'transform: translateY(1px)',
+			mainClassExtra: computed(() => (interactionData.isLikeDisabled ? 'opacity-50' : '')),
 			action: () =>
 				isAuthenticated.value
-					? toggleInteraction('likes', interactionData.isLiked, props.item.id, userCredentials.value.uid)
+					? interactionData.isLikeDisabled
+						? {}
+						: toggleInteraction('likes', interactionData.isLiked, props.item.id, userCredentials.value.uid)
 					: openModal(`pleaseLogin`),
 		},
 		{
 			name: 'watch',
 			mainIcon: computed(() => (!!interactionData.isWatched ? 'check-circle-fill' : 'check-circle')),
 			mainIconClass: 'filled-icon',
+			mainClassExtra: computed(() => (interactionData.isWatchDisabled ? 'opacity-50' : '')),
 			action: () =>
 				isAuthenticated.value
-					? toggleInteraction('watchs', interactionData.isWatched, props.item.id, userCredentials.value.uid)
+					? interactionData.isWatchDisabled
+						? {}
+						: toggleInteraction('watchs', interactionData.isWatched, props.item.id, userCredentials.value.uid)
 					: openModal(`pleaseLogin`),
 		},
 	]
@@ -98,18 +114,24 @@
 			mainIconClass: computed(() => (!!interactionData.isFavorited ? 'text-warning filled-icon colored' : 'filled-icon')),
 			mainIconSize: '1.275rem',
 			mainIconStyle: 'transform: translateY(-1px)',
+			mainClassExtra: computed(() => (interactionData.isFavDisabled ? 'opacity-50' : '')),
 			action: () =>
 				isAuthenticated.value
-					? toggleInteraction('favs', interactionData.isFavorited, props.item.id, userCredentials.value.uid)
+					? interactionData.isFavDisabled
+						? {}
+						: toggleInteraction('favs', interactionData.isFavorited, props.item.id, userCredentials.value.uid)
 					: openModal(`pleaseLogin`),
 		},
 		{
 			name: 'follow',
 			mainIcon: computed(() => (!!interactionData.isFollowed ? 'plus-circle-fill' : 'plus-circle')),
 			mainIconClass: 'filled-icon',
+			mainClassExtra: computed(() => (interactionData.isFollowDisabled ? 'opacity-50' : '')),
 			action: () =>
 				isAuthenticated.value
-					? toggleInteraction('follows', interactionData.isFollowed, props.item.id, userCredentials.value.uid)
+					? interactionData.isFollowDisabled
+						? {}
+						: toggleInteraction('follows', interactionData.isFollowed, props.item.id, userCredentials.value.uid)
 					: openModal(`pleaseLogin`),
 		},
 	]

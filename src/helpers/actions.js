@@ -29,49 +29,68 @@ export const toggleInteraction = async (interaction, interactionId, itemId, user
 
 	let response
 	let body
-	let type
+	let itemIdType
 
 	switch (interaction) {
 		case 'likes':
 		case 'watchs':
 			body = { movieId: itemId }
-			type = 'movie'
+			itemIdType = 'movie'
 			break
 
 		case 'favs':
 		case 'follows':
 			body = { watchlistId: itemId }
-			type = 'watchlist'
+			itemIdType = 'watchlist'
 			break
 	}
 
 	try {
-		const { getInteractions } = useUserStore()
-
 		response = await user.makeInteraction(interaction, interactionId, body)
 		if (response.ok) {
-			// update store data
-			await getInteractions(userId)
+			// first sync manually and remove toggling flag
+			const { updateInteractionStore } = useUserStore()
+			let result = await updateInteractionStore(interaction, interactionId, itemId, itemIdType, userId)
+			console.log(interaction + ' done - pending id')
+			if (result) {
+				// release button
+				isToggling = false
 
-			if (type === 'watchlist') {
-				const { updateWatchlistDataById } = useWatchlistStore()
+				// get related interaction data from db first
+				const { getInteractionByType } = useUserStore()
+				await getInteractionByType(userId, interaction)
+				console.log(interaction + ' id retrieved from db')
 
-				// try full sync with db
-				response = await watchlist.get(itemId)
-				if (response.ok) {
-					let item = await response.json()
-
-					console.log(item)
-					// update store data
-					updateWatchlistDataById(item)
-				}
+				// then try to catch db
+				await syncInteractionsStore(userId, itemId, itemIdType)
+				console.log('all interactions synced with db')
 			}
 		}
 
-		isToggling = false
 		return response
 	} catch (error) {
 		isToggling = false
 		console.log(error)
+	}
+}
+
+const syncInteractionsStore = async (userId, itemId, itemIdType) => {
+	const { getAllInteractions } = useUserStore()
+
+	// update store data
+	await getAllInteractions(userId)
+
+	if (itemIdType === 'watchlist') {
+		const { updateWatchlistDataById } = useWatchlistStore()
+
+		// try full sync with db
+		const response = await watchlist.get(itemId)
+		if (response.ok) {
+			let item = await response.json()
+
+			console.log(item)
+			// update store data
+			updateWatchlistDataById(item)
+		}
 	}
 }

@@ -23,7 +23,7 @@ export const useAuthStore = defineStore('auth', () => {
 	})
 	const { returnPage } = router
 
-	const { getInteractions, clearUserStore } = useUserStore()
+	const { getAllInteractions, clearUserStore } = useUserStore()
 
 	const login = async ({ email, password }) => {
 		const { user } = await signInWithEmailAndPassword(auth, email, password)
@@ -125,7 +125,7 @@ export const useAuthStore = defineStore('auth', () => {
 	onBeforeMount(async () => {
 		await fetchUser()
 		/* commented below cause watch seems satisfy needs */
-		// if (isAuthenticated.value) await getInteractions(currentUser.value.uid)
+		// if (isAuthenticated.value) await getAllInteractions(currentUser.value.uid)
 	})
 
 	/* controllers end */
@@ -143,7 +143,7 @@ export const useAuthStore = defineStore('auth', () => {
 
 	watch(isAuthenticated, async (newValue, oldValue) => {
 		if (newValue !== oldValue) clearWathclistData()
-		if (newValue === true && isEmailVerified.value) await getInteractions(currentUser.value.uid)
+		if (newValue === true && isEmailVerified.value) await getAllInteractions(currentUser.value.uid)
 	})
 	/* to do when auth status change */
 

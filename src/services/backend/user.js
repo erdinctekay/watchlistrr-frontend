@@ -27,7 +27,7 @@ const create = (body) => {
 }
 
 // to get likes, follows etc.
-const getInteractions = (id, interaction) => {
+const getInteraction = (id, interaction) => {
 	let result = fetch(USER_URL + '/' + id + '/' + interaction, apiMethod('GET'))
 	return result
 }
@@ -59,6 +59,6 @@ const makeInteraction = (interaction, interactionId, body) => {
 // 	return result
 // }
 
-export { getWatchlistsByUser, get, create, getInteractions, makeInteraction }
+export { getWatchlistsByUser, get, create, getInteraction, makeInteraction }
 
 // export { getAll, get, create, remove, put, patch }

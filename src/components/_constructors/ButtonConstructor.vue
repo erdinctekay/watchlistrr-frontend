@@ -4,7 +4,7 @@
 		@click.prevent.stop="buttonClick"
 		:type="buttonType"
 		class="btn d-flex flex-row align-items-center"
-		:class="`${mainClass} ${mainColor !== '' ? `btn-${mainColor}` : ''}`"
+		:class="[mainClass, mainClassExtra, `btn-${mainColor}`].filter((c) => c).join(' ')"
 		:style="mainStyle"
 		:disabled="isDisabled"
 		v-bind:data-bs-toggle="dataBsToggle"
@@ -58,6 +58,10 @@
 		mainClass: {
 			type: String,
 			required: true,
+		},
+		mainClassExtra: {
+			type: String,
+			default: '',
 		},
 		mainColor: {
 			type: String,

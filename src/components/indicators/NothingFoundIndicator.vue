@@ -11,8 +11,8 @@
 				<span v-else-if="!isUserPageOwner" class="h4 mb-5">Nothing to show here.</span>
 
 				<div v-else class="mb-5 d-flex flex-column align-items-center">
-					<span class="h4"> Feeling empty without any movies in here... </span>
-					<span class="lead">Add your first movie to get started!</span>
+					<span class="h4"> Feeling empty without any {{ source }}s in here... </span>
+					<span class="lead">Add your first {{ source }} to get started!</span>
 				</div>
 
 				<div v-if="!isHomePage && !isActiveSearchQuery">
@@ -72,14 +72,14 @@
 		return false
 	})
 
-	const isWatchlistPage = computed(() => {
-		if (currentPage.value.name === 'watchlistMovies.show') return true
+	const isUserWatchlistsPage = computed(() => {
+		if (currentPage.value.name === 'userWatchlists.show') return true
 
 		return false
 	})
 
-	const isUserWatchlistsPage = computed(() => {
-		if (currentPage.value.name === 'userWatchlists.show') return true
+	const isWatchlistPage = computed(() => {
+		if (currentPage.value.name === 'watchlistMovies.show') return true
 
 		return false
 	})
@@ -93,7 +93,12 @@
 		return false
 	})
 
+	let source = computed(() => {
+		if (isHomePage.value || isUserWatchlistsPage.value) return 'watchlist'
+		if (isWatchlistPage.value) return 'movie'
+	})
+
 	const isActiveSearchQuery = computed(() => {
-		return activeSortOptions.value.searchQuery !== ''
+		return activeSortOptions.value?.searchQuery[source.value]?.value !== ''
 	})
 </script>

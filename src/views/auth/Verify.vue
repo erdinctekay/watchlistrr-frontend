@@ -52,8 +52,34 @@
 					<p class="small my-3 mt-4 text-center">
 						<b class="fst-italic">Didn't receive the email?</b> <br />
 						Check your spam folder or click
-						<a class="text-decoration-underline cursor-pointer" @click="resendVerificationEmail()">resend</a>.
+						<a class="text-decoration-underline cursor-pointer" @click="handleResendVerificationEmail()">resend</a>.
 					</p>
+
+					<div
+						v-if="showNotify"
+						class="d-flex bg-secondary bg-opacity-75 text-gray-150 rounded-3 py-2 px-3"
+						:class="trying ? 'bg-secondary' : error ? 'bg-danger' : 'bg-success'"
+						style="min-height: 50px"
+					>
+						<span
+							v-if="trying"
+							class="small fw-bold d-flex flex-column col-12 align-items-center justify-content-center"
+						>
+							<span class="fw-normal text-nowrap fw-bold"> Sending... </span>
+						</span>
+
+						<span v-else class="small fw-bold d-flex flex-column col-12 align-items-center justify-content-center">
+							<span class="text-nowrap">
+								{{ error ? 'Your verification mail has been sent already.' : 'Verification mail sent successfully.' }}
+							</span>
+							<span class="fw-normal text-nowrap">
+								Check your inbox.
+								<span v-if="error">
+									Or <u>try {{ retryTimeout }} mins later.</u>
+								</span>
+							</span>
+						</span>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -62,11 +88,58 @@
 
 <script setup>
 	import ButtonConstructor from '@/components/_constructors/ButtonConstructor.vue'
+	import { ref, onMounted } from 'vue'
+	import { storeToRefs } from 'pinia'
 	import { router } from '@/helpers'
 	import { useAuthStore } from '@/stores/AuthStore'
 
 	const { userCredentials, resendVerificationEmail } = useAuthStore()
+	const { verificationSended, isFirstLogin } = storeToRefs(useAuthStore())
 	const { returnPage } = router
 
 	const verify = () => location.reload()
+
+	const error = ref(false)
+	const trying = ref(null)
+	const retryTimeout = ref(5)
+	const showNotify = ref(false)
+
+	onMounted(() => {
+		const isSended = localStorage.getItem('verificationSended') || verificationSended.value
+		console.log('is sended: ' + isSended)
+
+		if (isFirstLogin.value || isSended) showNotify.value = true
+
+		setTimeout(() => {
+			if (isSended) trying.value = false
+		}, 650)
+	})
+
+	const handleResendVerificationEmail = () => {
+		showNotify.value = true
+		trying.value = true
+
+		const date = new Date()
+		date.setMinutes(date.getMinutes() - retryTimeout.value)
+		const oneMinuteAgo = date.toISOString()
+
+		const isSended = localStorage.getItem('verificationSended') || verificationSended.value
+		console.log('is sended: ' + isSended)
+
+		const decide = () => {
+			if (!isSended || isSended <= oneMinuteAgo) {
+				resendVerificationEmail()
+				error.value = false
+				trying.value = false
+				return
+			}
+
+			// else show toast notify
+			/** will change with alert component **/
+			error.value = true
+			trying.value = false
+		}
+
+		setTimeout(decide, 650)
+	}
 </script>

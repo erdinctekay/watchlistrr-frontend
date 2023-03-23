@@ -25,6 +25,9 @@ export const useAuthStore = defineStore('auth', () => {
 
 	const { getAllInteractions, clearUserStore } = useUserStore()
 
+	const verificationSended = ref(null)
+	const isFirstLogin = ref(null)
+
 	const login = async ({ email, password }) => {
 		const { user } = await signInWithEmailAndPassword(auth, email, password)
 		currentUser.value = user
@@ -56,6 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
 		})
 		// then take last value with success
 		fetchUser()
+		isFirstLogin.value = true
 		// Send verification email
 		await sendVerificationEmail(user)
 		// first create user on our db
@@ -81,6 +85,9 @@ export const useAuthStore = defineStore('auth', () => {
 	const sendVerificationEmail = async (user) => {
 		try {
 			await sendEmailVerification(user)
+			const now = new Date().toISOString()
+			verificationSended.value = now
+			localStorage.setItem('verificationSended', now)
 			return true
 		} catch (error) {
 			console.log(error)
@@ -157,5 +164,7 @@ export const useAuthStore = defineStore('auth', () => {
 		isFetching,
 		resendVerificationEmail,
 		isEmailVerified,
+		verificationSended,
+		isFirstLogin,
 	}
 })

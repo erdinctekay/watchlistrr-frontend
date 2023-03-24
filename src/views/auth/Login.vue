@@ -51,17 +51,26 @@
 	const passwordToggle = ref()
 	const passwordFieldTpe = computed(() => (passwordToggle.value?.showPassword ? 'text' : 'password'))
 
+	const isPasswordOkey = ref(false)
+	const isEmailOkay = ref(false)
+
+	const isFormValid = computed(() => isPasswordOkey.value && isEmailOkay.value)
+
 	// form fields
 	// prettier-ignore
 	const fields = [
-		{ label: 'Email', name: 'email', type: 'email', model: email, disabled: isFormDisabled, inputAction: () => email.value = removeAllSpaces(email.value.toLowerCase()) },
-		{ label: 'Password', name: 'password', type: passwordFieldTpe, model: password, disabled: isFormDisabled },
+		{ label: 'Email', name: 'email', type: 'email', model: email, disabled: isFormDisabled, inputAction: () => validateEmail(), blurAction: () => formatEmail() },
+		{ label: 'Password', name: 'password', type: passwordFieldTpe, model: password, disabled: isFormDisabled, inputAction: () => validatePassword() },
 	]
 
 	const submitButton = {
 		label: 'Login',
 		labelClass: 'text-uppercase fs-5 py-2 fw-bold w-100',
-		disabled: isFormDisabled,
+		disabled: computed(() => {
+			if (isFormDisabled.value || !isFormValid.value) {
+				return true
+			}
+		}),
 	}
 
 	const handleSubmit = async () => {
@@ -80,4 +89,21 @@
 
 		isFormDisabled.value = false
 	}
+
+	const formatEmail = () => {
+		email.value = removeAllSpaces(email.value.toLowerCase())
+	}
+
+	const validateEmail = () => {
+		formatEmail()
+
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+		const emailValue = email.value
+
+		const isEmailValid = emailRegex.test(emailValue)
+
+		isEmailOkay.value = isEmailValid
+	}
+
+	const validatePassword = () => (isPasswordOkey.value = password.value.length >= 6)
 </script>

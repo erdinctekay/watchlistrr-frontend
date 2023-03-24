@@ -23,13 +23,14 @@
 						<form-show-password-toggle ref="passwordToggle" :isFormDisabled="ref(isFormDisabled)" />
 
 						<div class="mt-2 bg-standart opacity-75 rounded-3 px-2 py-3">
-							<ul class="small m-0">
-								<li>Should have 8 character at least</li>
-								<li>Should have 1 uppercase character at least</li>
-								<li>Should have 1 lowercase character at least</li>
-								<li>Should have 1 special character at least</li>
-								<li>Should have 1 number at least</li>
-								<li>Passwords should match</li>
+							<ul class="password-check small m-0 px-3 list-unstyled">
+								<li
+									v-for="req in validatePassword()"
+									:class="{ 'text-muted': req.isMet, 'text-body': !req.isMet }"
+									:style="{ 'text-decoration': req.isMet ? 'line-through' : 'none' }"
+								>
+									{{ req.text }}
+								</li>
 							</ul>
 						</div>
 					</template>
@@ -53,7 +54,7 @@
 	const { register } = useAuthStore()
 
 	const { returnPage } = router
-	const { removeAllSpaces, normalizeSpacing, capitalizeWords, sanitize } = utils
+	const { removeAllSpaces, normalizeSpacing, capitalizeWords, sanitize, limitMaxLength, limitWordLength } = utils
 
 	const fullName = ref('')
 	const email = ref('')
@@ -64,19 +65,29 @@
 	const passwordToggle = ref()
 	const passwordFieldTpe = computed(() => (passwordToggle.value?.showPassword ? 'text' : 'password'))
 
+	const isNameOkay = computed(() => fullName.value.length >= 3)
+	const isPasswordOkay = ref(false)
+	const isEmailOkay = ref(false)
+
+	const isFormValid = computed(() => isNameOkay.value && isPasswordOkay.value && isEmailOkay.value)
+
 	// form fields
 	// prettier-ignore
 	const fields = [
-		{ label: 'Full Name', name: 'full-name', type: 'text', model: fullName, disabled: isFormDisabled, inputAction: () => fullName.value = normalizeSpacing(capitalizeWords(sanitize(fullName.value.toLowerCase()))) }, // class can be added //
-		{ label: 'Email', name: 'email', type: 'email', model: email, disabled: isFormDisabled, inputAction: () => email.value = removeAllSpaces(email.value.toLowerCase()) },
-		{ label: 'Password', name: 'password', type: passwordFieldTpe, model: password, disabled: isFormDisabled },
-		{ label: 'Confirm Password', name: 'confirm-password', type: passwordFieldTpe, model: confirmPassword, disabled: isFormDisabled },
+		{ label: 'Display Name', name: 'full-name', type: 'text', model: fullName, disabled: isFormDisabled, inputAction: () => fullName.value = limitMaxLength(limitWordLength(normalizeSpacing(capitalizeWords(sanitize(fullName.value.toLowerCase())))), 30) },
+		{ label: 'Email', name: 'email', type: 'email', model: email, disabled: isFormDisabled, inputAction: () => validateEmail(), blurAction: () => formatEmail() },
+		{ label: 'Password', name: 'password', type: passwordFieldTpe, model: password, disabled: isFormDisabled, inputAction: () => validatePassword() },
+		{ label: 'Confirm Password', name: 'confirm-password', type: passwordFieldTpe, model: confirmPassword, disabled: isFormDisabled, inputAction: () => validatePassword() },
 	]
 
 	const submitButton = {
 		label: 'Register',
 		labelClass: 'text-uppercase fs-5 py-2 fw-bold w-100',
-		disabled: isFormDisabled,
+		disabled: computed(() => {
+			if (isFormDisabled.value || !isFormValid.value) {
+				return true
+			}
+		}),
 	}
 
 	const handleSubmit = async () => {
@@ -97,4 +108,62 @@
 
 		isFormDisabled.value = false
 	}
+
+	const formatEmail = () => {
+		email.value = removeAllSpaces(email.value.toLowerCase())
+	}
+
+	const validateEmail = () => {
+		formatEmail()
+
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+		const emailValue = email.value
+
+		const isEmailValid = emailRegex.test(emailValue)
+
+		isEmailOkay.value = isEmailValid
+	}
+
+	const validatePassword = () => {
+		const allowedSpecialChars = '\u0021\u0023\u0024\u0025\u002a\u002b\u002c\u002d\u002e\u003f\u0040\u005e\u005f'
+
+		const passwordRegex = new RegExp(
+			`^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[${allowedSpecialChars}])[A-Za-z\\d${allowedSpecialChars}]{8,}$`
+		)
+		const passwordValue = password.value
+		const confirmPasswordValue = confirmPassword.value
+
+		// Check if password matches confirm password
+		const isMatched =
+			passwordValue === confirmPasswordValue &&
+			passwordRegex.test(passwordValue) &&
+			passwordRegex.test(confirmPasswordValue)
+
+		// prettier-ignore
+		const requirements = [
+			{ text: 'Should have 8 characters at least', isMet: passwordValue.length >= 8 },
+			{ text: 'Should have 1 uppercase character at least', isMet: /[A-Z]/.test(passwordValue) },
+			{ text: 'Should have 1 lowercase character at least', isMet: /[a-z]/.test(passwordValue) },
+	      		{ text: 'Should have 1 special character at least', isMet: new RegExp(`[${allowedSpecialChars}]`).test(passwordValue) },
+			{ text: 'Should have 1 number at least', isMet: /\d/.test(passwordValue) },
+			{ text: 'Passwords should match', isMet: isMatched },
+		]
+
+		// Check if all requirements are met
+		const allRequirementsMet = requirements.every((req) => req.isMet)
+		isPasswordOkay.value = allRequirementsMet
+
+		return requirements
+	}
 </script>
+<style>
+	[data-bs-theme='dark'] ul.password-check li.text-body {
+		--bs-body-color: var(--bs-white) !important;
+		--bs-body-color-rgb: var(--bs-white-rgb) !important;
+	}
+
+	[data-bs-theme='light'] ul.password-check li.text-body {
+		--bs-body-color: var(--bs-black) !important;
+		--bs-body-color-rgb: var(--bs-black-rgb) !important;
+	}
+</style>

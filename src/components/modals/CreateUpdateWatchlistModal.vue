@@ -128,13 +128,12 @@
 		if (!isFormDisabled.value) isPublic.value = !isPublic.value
 	}
 
+	const isFormValid = computed(() => title.value.length >= 5)
+
 	const item = {
 		title: computed(() => (isEditing.value ? 'Edit watchlist' : 'Add new watchlist')),
 		successButton: {
 			disabled: computed(() => {
-				return isFormDisabled.value
-
-				// will be enabled after validation feature
 				if (isFormDisabled.value || !isFormValid.value) {
 					return true
 				}

@@ -5,17 +5,14 @@ import { movie } from '@/services/backend/'
 import { watchlist } from '@/services/backend'
 
 import { useSortStore } from '@/stores/SortStore'
-import { useRouteStore } from '@/stores/RouteStore'
 
 export const useMovieStore = defineStore('movie', () => {
 	const { activeSortOptions, updateSearchQuery } = useSortStore()
 
 	const movies = reactive({ data: [], watchlistId: null })
-	// for search on tmdb
-	const selectedMovies = reactive({ data: [] })
 
 	const page = ref(0)
-	const limit = 1
+	const limit = 12
 	const queryOptions = reactive({
 		sortFilter: computed(() => activeSortOptions.sortFilterMovie?.split(' ')[0]),
 		sortOrder: computed(() => activeSortOptions.sortFilterMovie?.split(' ')[1]),
@@ -74,10 +71,10 @@ export const useMovieStore = defineStore('movie', () => {
 			const status = response.status
 			const data = success ? await response.json() : null
 
-			// add some delay and give time to showing loading indicator
-			await (async () => {
-				await new Promise((resolve) => setTimeout(resolve, 100))
-			})()
+			// // add some delay and give time to showing loading indicator
+			// await (async () => {
+			// 	await new Promise((resolve) => setTimeout(resolve, 100))
+			// })()
 
 			// if request not completed with success decrement page number
 			page.value = success ? page.value : --page.value
@@ -93,6 +90,11 @@ export const useMovieStore = defineStore('movie', () => {
 			isFetching.value = false
 
 			if (data) {
+				// duplicate join id to each nested movie object
+				data.forEach((movieJoin) => (movieJoin.movie['joinId'] = movieJoin.id))
+
+				console.log(data)
+
 				if (movies.data.length < 1) {
 					movies.data = [...data]
 				} else {
@@ -143,10 +145,30 @@ export const useMovieStore = defineStore('movie', () => {
 	}
 
 	const updateCurrentWatchlistData = (item) => {
-		if (currentWatchlist) {
-			currentWatchlist.value = item
-		}
+		if (currentWatchlist) currentWatchlist.value = item
+
 		return
+	}
+
+	const updateMovieDataById = (item, message = null) => {
+		const id = item.joinId
+		const index = movies.data.findIndex((movie) => movie.id === id)
+
+		// check if triggered for delete
+		if (message === 'delete') {
+			if (index !== -1) movies.data.splice(index, 1)
+			return
+		}
+
+		// else update with new values
+		/* currently not supporting */
+		// if (index !== -1) {
+		// 	const updatedMovies = {
+		// 		...movie.data[index],
+		// 		...item,
+		// 	}
+		// 	movie.data.splice(index, 1, updatedMovies)
+		// }
 	}
 
 	const refetchMovies = async () => {
@@ -169,5 +191,6 @@ export const useMovieStore = defineStore('movie', () => {
 		refetchMovies,
 		noSearchResult,
 		hasActiveSearch,
+		updateMovieDataById,
 	}
 })

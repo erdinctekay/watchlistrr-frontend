@@ -29,9 +29,12 @@ export const sanitize = (input) => {
 }
 
 export const formatShortName = (fullName) => {
-	let nameArray = fullName.split(' ')
-	let firstName = nameArray[0]
-	let lastName = nameArray[nameArray.length - 1]
+	// due to reactivity null object can pass
+	if (!fullName) return
+
+	const nameArray = fullName.split(' ')
+	const firstName = nameArray[0]
+	const lastName = nameArray.length > 1 ? nameArray[nameArray.length - 1] : ''
 	let middleInitials = ''
 
 	// Check if there are middle names/initials
@@ -41,7 +44,9 @@ export const formatShortName = (fullName) => {
 		}
 	}
 
-	return firstName + ' ' + middleInitials + ' ' + lastName
+	const formattedName = removeLastWhiteSpace(normalizeSpacing(firstName + ' ' + middleInitials + ' ' + lastName))
+
+	return formattedName
 }
 
 export const limitMaxLength = (value, maxLength) => {
@@ -76,6 +81,13 @@ export const removeAllSpaces = (str) => {
 
 export const removeWhiteSpaces = (str) => {
 	return str.replace(/' '/g, '')
+}
+
+export const removeLastWhiteSpace = (str) => {
+	let string = str
+	if (str.charAt(str.length - 1) === ' ') string = str.slice(0, -1)
+
+	return string
 }
 
 export const normalizeSpacing = (input) => {

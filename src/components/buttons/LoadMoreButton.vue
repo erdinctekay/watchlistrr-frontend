@@ -2,7 +2,7 @@
 	<button-constructor
 		@click="clickAction()"
 		:mainColor="'primary'"
-		:mainClass="`w-100 w-sm-25 fw-bold ${isDisabled ? 'disabled' : ''}`"
+		:mainClass="`w-100 ${isAttachedModal ? 'me-3 mt-4' : 'w-sm-25'} fw-bold ${isDisabled ? 'disabled' : ''}`"
 		:textClass="'w-100'"
 	>
 		<span v-if="isDisabled"> LOADING </span>
@@ -20,6 +20,10 @@
 		isDisabled: {
 			type: Boolean,
 			required: true,
+		},
+		isAttachedModal: {
+			type: Boolean,
+			default: false,
 		},
 	})
 </script>

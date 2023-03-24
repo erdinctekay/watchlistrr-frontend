@@ -15,7 +15,7 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 	const watchlists = reactive({ data: [], watchlistsBy: null })
 
 	const page = ref(0)
-	const limit = 1
+	const limit = 12
 	const queryOptions = reactive({
 		sort: {
 			sortFilter: computed(() => activeSortOptions.sortFilterList?.split(' ')[0]),
@@ -86,10 +86,10 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 			const status = response.status
 			const data = success ? await response.json() : null
 
-			// add some delay and give time to showing loading indicator
-			await (async () => {
-				await new Promise((resolve) => setTimeout(resolve, 100))
-			})()
+			// // add some delay and give time to showing loading indicator
+			// await (async () => {
+			// 	await new Promise((resolve) => setTimeout(resolve, 100))
+			// })()
 
 			// if request not completed with success decrement page number
 			page.value = success ? page.value : --page.value
@@ -171,12 +171,11 @@ export const useWatchlistStore = defineStore('watchlist', () => {
 
 		const { updateCurrentWatchlistData, currentWatchlist } = useMovieStore()
 
-		console.log()
-
 		// check if triggered for delete
 		if (message === 'delete') {
 			const { returnPage } = router
 			if (index !== -1) watchlists.data.splice(index, 1)
+			// if we are on that watchlist page return
 			if (currentWatchlist?.id === id) returnPage('home')
 			return
 		}

@@ -78,7 +78,7 @@
 									: formatShortName(currentWatchlist?.user.displayName)
 							}}
 						</a>
-						<i> — {{ hasActiveSearch ? 'filtered' : 'all sorted' }} </i>
+						<i>&nbsp;— {{ hasActiveSearch ? 'filtered' : 'all sorted' }} </i>
 					</span>
 					<span
 						v-else

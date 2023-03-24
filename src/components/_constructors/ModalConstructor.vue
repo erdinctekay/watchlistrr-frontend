@@ -126,6 +126,8 @@
 
 	const closeAction = () => {
 		closeModal()
+		const html = document.querySelector('html')
+		html.classList.remove('modal-open')
 	}
 
 	const openAction = () => {
@@ -134,12 +136,15 @@
 
 	const bsModalFixes = () => {
 		// remove bs-padding fixer
-		let header = document.querySelector('header')
-		let body = document.querySelector('body')
-		let modal = document.querySelector('.modal')
-		let backdrops = document.querySelectorAll('.modal-backdrop')
+		const header = document.querySelector('header')
+		const html = document.querySelector('html')
+		const body = document.querySelector('body')
+		const modal = document.querySelector('.modal')
+		const backdrops = document.querySelectorAll('.modal-backdrop')
 
-		let elems = [body, header, modal]
+		const elems = [body, modal]
+
+		html.classList.add('modal-open')
 
 		elems.forEach((el) => {
 			el.style.removeProperty('padding-right')

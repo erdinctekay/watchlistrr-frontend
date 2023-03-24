@@ -2,6 +2,7 @@
 	<modal-constructor
 		:isModalShowing="isModalShowing"
 		:isDismissible="!isFormDisabled"
+		:isFormDisabled="isFormDisabled"
 		:item="item"
 		:triggerModalClose="triggerModalClose"
 	>
@@ -112,6 +113,13 @@
 			isFormDisabled.value = false
 			triggerModalClose.value = true
 		}
+
+		// release modal even if no success
+		setTimeout(() => {
+			/* add some delay for awareness
+			 ** since we are not using any error notify */
+			isFormDisabled.value = false
+		}, 650)
 	}
 
 	const { returnPage } = router

@@ -79,16 +79,23 @@
 
 			success = response.ok
 			console.log('success: ' + success)
-
-			if (success) {
-				if (askOnDelete.value === doNotAskOnDelete.value) toggleAskOnDeleteStore()
-
-				isFormDisabled.value = false
-				triggerModalClose.value = true
-			}
 		} catch (error) {
 			console.log(error)
 		}
+
+		if (success) {
+			if (askOnDelete.value === doNotAskOnDelete.value) toggleAskOnDeleteStore()
+
+			isFormDisabled.value = false
+			triggerModalClose.value = true
+		}
+
+		// release modal even if no success
+		setTimeout(() => {
+			/* add some delay for awareness
+			 ** since we are not using any error notify */
+			isFormDisabled.value = false
+		}, 650)
 	}
 
 	const { askOnDelete } = storeToRefs(useUserStore())

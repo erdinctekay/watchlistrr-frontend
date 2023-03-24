@@ -271,6 +271,13 @@
 			triggerModalClose.value = true
 			syncWatchlistChanges(currentPage.value.params.id)
 		}
+
+		// release modal even if no success
+		setTimeout(() => {
+			/* add some delay for awareness
+			 ** since we are not using any error notify */
+			isFormDisabled.value = false
+		}, 650)
 	}
 
 	const isFormValid = computed(() => selectedMovies.value.data.length !== 0)

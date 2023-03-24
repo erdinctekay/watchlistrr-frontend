@@ -7,6 +7,7 @@
 		<div v-for="field in fields" :key="field.name" class="input-group flex-wrap mb-2">
 			<div class="form-floating w-100">
 				<input
+					@blur="field.blurAction"
 					@input="field.inputAction"
 					class="form-control rounded-2 pt-4 py-3 bg-standart hover-highlight border-transparent ps-4 fw-bold"
 					:class="field.class"
@@ -29,7 +30,9 @@
 				<p
 					class="mb-0 small fst-italic me-1"
 					style="pointer-events: none; overflow: hidden; white-space: nowrap; text-overflow: ellipsis"
-				></p>
+				>
+					{{ field.description?.value }}
+				</p>
 			</div>
 		</div>
 

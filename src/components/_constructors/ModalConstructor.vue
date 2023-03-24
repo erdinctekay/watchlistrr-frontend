@@ -16,7 +16,7 @@
 						class="btn-close"
 						data-bs-dismiss="modal"
 						aria-label="Close"
-						:disabled="item.successButton.disabled?.value"
+						:disabled="isFormDisabled"
 					></button>
 				</div>
 				<div class="modal-body-wrapper">
@@ -31,7 +31,7 @@
 						:mainClass="'rounded-pill px-2 p-1 my-1 text-light'"
 						:hasMainIcon="true"
 						:textClass="'small'"
-						:isDisabled="item.successButton.disabled?.value"
+						:isDisabled="isFormDisabled"
 					>
 						Close
 					</button-constructor>
@@ -75,6 +75,10 @@
 			default: false,
 		},
 		triggerModalClose: {
+			type: Boolean,
+			default: false,
+		},
+		isFormDisabled: {
 			type: Boolean,
 			default: false,
 		},
@@ -182,12 +186,12 @@
 	}
 
 	// primary button action
-
-	const primaryAction = () => {
+	const primaryAction = async () => {
+		console.log('primary action triggered')
 		const modal = Modal.getOrCreateInstance(modalRef.value)
-		modal.hide()
-		closeAction()
 		item.successButton.action()
+		// 	modal.hide()
+		// 	closeAction()
 		return
 	}
 </script>

@@ -25,7 +25,7 @@
 							<span>{{ movie.title }}</span>
 							<template v-if="index !== 4 && index !== item.highlightedMovies.length - 1">,&nbsp</template>
 						</template>
-						<span v-if="item.highlightedMovies.length > 5"> and more...</span>
+						<span class="fst-normal fw-normal" v-if="item.moviesCount > 5"> and more...</span>
 					</template>
 
 					<!-- if there is no movies -->

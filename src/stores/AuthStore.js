@@ -29,61 +29,73 @@ export const useAuthStore = defineStore('auth', () => {
 	const isFirstLogin = ref(null)
 
 	const login = async ({ email, password }) => {
-		const { user } = await signInWithEmailAndPassword(auth, email, password)
-		currentUser.value = user
+		try {
+			const { user } = await signInWithEmailAndPassword(auth, email, password)
+			currentUser.value = user
 
-		// check if user present is on db
-		const response = await userService.get(user.uid)
-		// if not create it
-		if (!response.ok) {
-			// console.log('user not found on db - will be created')
+			// check if user present is on db
+			const response = await userService.get(user.uid)
+			// if not create it
+			if (!response.ok) {
+				// console.log('user not found on db - will be created')
 
-			// if not create user on our db
-			const response = await userService.create({ displayName: user.displayName })
-			// if user cannot created with success logout
-			if (!response.ok) return logout()
+				// if not create user on our db
+				const response = await userService.create({ displayName: user.displayName })
+				// if user cannot created with success logout
+				if (!response.ok) return logout()
 
-			// console.log('user created with success!')
+				// console.log('user created with success!')
+			}
+			await fetchUser()
+			returnPage('home')
+		} catch (error) {
+			console.log(error)
 		}
-		await fetchUser()
-		returnPage('home')
 	}
 
 	const register = async ({ email, password, fullName }) => {
-		// prettier-ignore
-		const { user } = await createUserWithEmailAndPassword(auth, email, password)
-		currentUser.value = user
-		// set first for block flicking on view
-		currentUser.value = { ...user, displayName: fullName }
-		await updateProfile(user, {
-			displayName: fullName,
-		})
-		// then take last value with success
-		fetchUser()
-		isFirstLogin.value = true
-		// Send verification email
-		await sendVerificationEmail(user)
-		// first create user on our db
-		const response = await userService.create({ displayName: fullName })
-		// if user cannot created with success logout
-		if (!response.ok) return logout()
-		// redirect
-		returnPage('home')
+		try {
+			// prettier-ignore
+			const { user } = await createUserWithEmailAndPassword(auth, email, password)
+			currentUser.value = user
+			// set first for block flicking on view
+			currentUser.value = { ...user, displayName: fullName }
+			await updateProfile(user, {
+				displayName: fullName,
+			})
+			// then take last value with success
+			fetchUser()
+			isFirstLogin.value = true
+			// Send verification email
+			await sendVerificationEmail(user)
+			// first create user on our db
+			const response = await userService.create({ displayName: fullName })
+			// if user cannot created with success logout
+			if (!response.ok) return logout()
+			// redirect
+			returnPage('home')
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	const logout = async () => {
-		await signOut(auth)
-		currentUser.value = null
-		await Promise.all([
-			// clear local storage items
-			localStorage.clear(),
-			// clear user store
-			clearUserStore(),
-		])
-		// redirect
-		returnPage('home')
-		// to get default local storage items
-		location.reload()
+		try {
+			await signOut(auth)
+			currentUser.value = null
+			await Promise.all([
+				// clear local storage items
+				localStorage.clear(),
+				// clear user store
+				clearUserStore(),
+			])
+			// redirect
+			returnPage('home')
+			// to get default local storage items
+			location.reload()
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	const sendVerificationEmail = async (user) => {

@@ -1,25 +1,31 @@
 <template>
 	<div
-		class="d-flex w-100 align-items-center hover-highlight-icon justify-content-end flex-row-reverse rounded-pill"
+		class="d-flex w-100 align-items-center justify-content-end flex-row-reverse rounded-pill"
+		:class="hasActiveSearch ? '' : 'hover-highlight-icon'"
 		style="position: relative; min-width: 13.5rem; /* transform: translateX(-2.1rem); margin-right: -2.1rem */"
+		:style="isFormDisabled ? 'pointer-events: none' : ''"
 	>
-		<!-- <button
-			class="btn bg-transparent hover-highlight-icon rounded-circle search-reset"
-			type="reset"
-			style="aspect-ratio: 1; padding: 0 0.5rem; transform: translateX(-42px); margin-right: -40px"
-		>
-			<i class="bi bi-arrow-clockwise rotate-180" style="font-size: 1.25rem; max-height: 20px"></i>
-		</button> -->
 		<i
+			v-if="!hasActiveSearch"
 			class="bi bi-search"
 			style="
 				aspect-ratio: 1;
 				padding: 0 0.5rem;
+				min-width: 38px;
 				transform: translateX(-42px);
 				margin-right: -40px;
 				pointer-events: none !important;
 			"
 		></i>
+		<button
+			v-else
+			@click="clearSearch()"
+			class="btn bg-transparent hover-highlight-icon rounded-circle search-reset"
+			type="reset"
+			style="aspect-ratio: 1; padding: 0 0.5rem; transform: translateX(-42px); margin-right: -40px"
+		>
+			<i class="bi bi-arrow-clockwise rotate-180" style="font-size: 1.25rem; max-height: 20px"></i>
+		</button>
 
 		<!-- prettier-ignore-attribute class -->
 		<input
@@ -31,6 +37,7 @@
 			:placeholder="`${props.placeholder ? props.placeholder : 'Search'}`"
 			aria-label="Search"
 			style="padding-right: 38px; font-size: 0.875rem"
+			:disabled="isFormDisabled"
 			data-bs-toggle="popover"
 			data-bs-trigger="hover"
 			data-bs-placement="bottom"
@@ -44,7 +51,7 @@
 	</div>
 </template>
 <script setup>
-	import { ref } from 'vue'
+	import { ref, computed } from 'vue'
 	import { storeToRefs } from 'pinia'
 	import { utils } from '@/helpers'
 	import { useSortStore } from '@/stores/SortStore'
@@ -52,6 +59,7 @@
 	const { normalizeSpacing, sanitize } = utils
 
 	const searchQuery = ref()
+	const hasActiveSearch = computed(() => searchQuery.value?.length > 0)
 
 	const { currentPage } = storeToRefs(props)
 
@@ -64,7 +72,7 @@
 				const { updateSearchQuery } = useSortStore()
 
 				if (props.searchSource === 'tmdb') {
-					return updateSearchQuery(searchValue, 'tmdb')
+					return updateSearchQuery(searchValue, 'tmdb', 'userInput')
 				} else {
 					// prettier-ignore
 					if (props.currentPage.name === 'home' || props.currentPage.name === 'userWatchlists.show') return updateSearchQuery(searchValue, 'watchlist', 'userInput')
@@ -73,6 +81,11 @@
 				}
 			}
 		}, 700)
+	}
+
+	const clearSearch = () => {
+		searchQuery.value = ''
+		searchAction()
 	}
 
 	const props = defineProps({
@@ -91,6 +104,10 @@
 		placeholder: {
 			type: String,
 			default: null,
+		},
+		isFormDisabled: {
+			type: Boolean,
+			default: false,
 		},
 	})
 </script>

@@ -84,12 +84,16 @@
 															-webkit-box-orient: vertical;
 															padding-bottom: 3px !important;
 														"
-														>{{ item.title }}</span
 													>
+														{{ item.title }}
+													</span>
 													<!-- SOME CONFLICTS HERE -->
 													<!-- !!!! control with diacritic cleaned state -->
 													<span
-														v-if="item.title !== item.originalTitle"
+														v-if="
+															diacritic.clean(item.title).toLowerCase() !==
+															diacritic.clean(item.originalTitle).toLowerCase()
+														"
 														class="small text-muted"
 														style="
 															text-overflow: ellipsis;
@@ -99,8 +103,9 @@
 															-webkit-box-orient: vertical;
 															padding-bottom: 3px !important;
 														"
-														>{{ item.originalTitle }}</span
 													>
+														{{ item.originalTitle }}
+													</span>
 												</div>
 												<div class="col-2 pe-1 d-flex flex-column justify-content-between">
 													<div
@@ -191,6 +196,7 @@
 
 	import { ref, computed, watch, onBeforeUnmount } from 'vue'
 	import { storeToRefs } from 'pinia'
+	import diacritic from 'diacritic'
 
 	import { movie } from '@/services/backend/'
 

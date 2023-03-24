@@ -54,7 +54,16 @@
 	const { register } = useAuthStore()
 
 	const { returnPage } = router
-	const { removeAllSpaces, normalizeSpacing, capitalizeWords, sanitize, limitMaxLength, limitWordLength } = utils
+	const {
+		removeAllSpaces,
+		normalizeSpacing,
+		removeLastWhiteSpace,
+		capitalizeWords,
+		sanitize,
+		limitMaxLength,
+		limitWordLength,
+		formatShortName,
+	} = utils
 
 	const fullName = ref('')
 	const email = ref('')
@@ -72,9 +81,15 @@
 	const isFormValid = computed(() => isNameOkay.value && isPasswordOkay.value && isEmailOkay.value)
 
 	// form fields
+	const fullNameDescription = computed(() =>
+		isNameOkay.value && formatShortName(removeLastWhiteSpace(fullName.value)) !== removeLastWhiteSpace(fullName.value)
+			? `will shown as "${formatShortName(fullName.value)}" mostly.`
+			: ''
+	)
+
 	// prettier-ignore
 	const fields = [
-		{ label: 'Display Name', name: 'full-name', type: 'text', model: fullName, disabled: isFormDisabled, inputAction: () => fullName.value = limitMaxLength(limitWordLength(normalizeSpacing(capitalizeWords(sanitize(fullName.value.toLowerCase())))), 30) },
+		{ label: 'Display Name', name: 'full-name', type: 'text', model: fullName, disabled: isFormDisabled, description: fullNameDescription, inputAction: () => fullName.value = limitMaxLength(limitWordLength(normalizeSpacing(capitalizeWords(sanitize(fullName.value.toLowerCase())))), 30) },
 		{ label: 'Email', name: 'email', type: 'email', model: email, disabled: isFormDisabled, inputAction: () => validateEmail(), blurAction: () => formatEmail() },
 		{ label: 'Password', name: 'password', type: passwordFieldTpe, model: password, disabled: isFormDisabled, inputAction: () => validatePassword() },
 		{ label: 'Confirm Password', name: 'confirm-password', type: passwordFieldTpe, model: confirmPassword, disabled: isFormDisabled, inputAction: () => validatePassword() },

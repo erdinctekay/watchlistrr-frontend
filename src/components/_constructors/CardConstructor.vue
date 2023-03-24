@@ -6,7 +6,7 @@
 					class="card-body bg-standart hover-highlight special-hover d-flex flex-column justify-content-between"
 					:class="type === 'movie' ? 'movie' : ''"
 					:style="{
-						'--backdrop-path': type === 'movie' ? `url(https://image.tmdb.org/t/p/w500${item.backdropPath})` : '',
+						'--backdrop-path': type === 'movie' ? `url(https://image.tmdb.org/t/p/w500${backdropPath})` : '',
 					}"
 				>
 					<div>
@@ -19,10 +19,18 @@
 										:style="{ 'max-width': `${sideImageWidth}px` }"
 									>
 										<img
+											v-if="item.posterPath"
 											data-key=""
 											width="100"
 											:src="`https://image.tmdb.org/t/p/w200` + item.posterPath"
 											class="rounded-3"
+											style="aspect-ratio: 2/3; min-width: 100px"
+										/>
+										<img
+											v-else
+											class="rounded-3"
+											src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2050%2075%22%3E%3Crect%20width%3D%2250%22%20height%3D%2275%22%20fill%3D%22%23eee%22%2F%3E%3C%2Fsvg%3E"
+											width="50"
 											style="aspect-ratio: 2/3; min-width: 100px"
 										/>
 									</div>
@@ -108,7 +116,7 @@
 	import PrivateItemIndicator from '@/components/indicators/PrivateItemIndicator.vue'
 	import ControlDropdown from '@/components/dropdowns/ControlDropdown.vue'
 
-	import { onMounted, onUpdated } from 'vue'
+	import { onMounted, onUpdated, computed } from 'vue'
 
 	const props = defineProps({
 		type: {
@@ -132,6 +140,8 @@
 			required: true,
 		},
 	})
+
+	const backdropPath = computed(() => (props.item.backdropPath ? props.item.backdropPath : props.item.posterPath))
 
 	onMounted(() => {
 		const backdropUrl = `url(https://image.tmdb.org/t/p/w500${props.item.backdropPath})`

@@ -8,20 +8,21 @@
 	>
 		<template #after-title>
 			<div class="pt-3 d-flex justify-content-start align-items-end text-muted">
-				<span class="small fst-italic">
+				<span class="small fst-italic" style="min-width: 170px">
 					{{ item.year }}
 					<b>·</b>
 					{{ item.type === 'tv' ? 'TV Series' : 'Movie' }}
 					<b>·</b>
-					{{ formatCount(item.runtime, 'min') }}
+					{{ formatCount(item.runtime || 0, 'min') }}
 				</span>
 			</div>
 			<div v-if="item.type === 'tv'" class="pt-0 d-flex justify-content-start align-items-end text-muted">
-				<span class="small">
-					{{ formatCount(item.season, 'season') }}
+				<span class="small" style="min-width: 200px">
+					{{ formatCount(item.season || 0, 'season') }}
 					<b>·</b>
-					{{ formatCount(item.episodes, 'episode') }}
-					<span v-if="item.ended" class="fst-italic"><span class="fst-normal">— </span>ended</span>
+					{{ formatCount(item.episodes || 0, 'episode') }}
+					<!-- <span v-if="item.ended" class="fst-italic"><span class="fst-normal">— </span>ended</span> -->
+					<span v-if="item.ended" class="fst-italic"><b>·</b> end</span>
 				</span>
 			</div>
 			<div

@@ -45,6 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
 
 			// console.log('user created with success!')
 		}
+		await fetchUser()
 		returnPage('home')
 	}
 
@@ -73,10 +74,13 @@ export const useAuthStore = defineStore('auth', () => {
 	const logout = async () => {
 		await signOut(auth)
 		currentUser.value = null
-		// clear local storage items
-		localStorage.clear()
-		// clear user store
-		clearUserStore()
+		await Promise.all([
+			// clear local storage items
+			localStorage.clear(),
+			// clear user store
+			clearUserStore(),
+		])
+		// redirect
 		returnPage('home')
 		// to get default local storage items
 		location.reload()
@@ -146,11 +150,11 @@ export const useAuthStore = defineStore('auth', () => {
 	/* getters end */
 
 	/* to do when auth status change */
-	const { clearWathclistData } = useWatchlistStore()
+	const { refetchWatchlists } = useWatchlistStore()
 
 	watch(isAuthenticated, async (newValue, oldValue) => {
-		if (newValue !== oldValue) clearWathclistData()
-		if (newValue === true && isEmailVerified.value) await getAllInteractions(currentUser.value.uid)
+		if (newValue !== oldValue) await refetchWatchlists()
+		if (newValue && isEmailVerified.value) await getAllInteractions(currentUser.value.uid)
 	})
 	/* to do when auth status change */
 

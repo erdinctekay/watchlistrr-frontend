@@ -22,7 +22,7 @@ const get = (id) => {
 	return result
 }
 
-const create = async (body) => {
+const create = (body) => {
 	let result = fetch(WATCHLIST_URL, apiMethod('POST', body))
 	return result
 }
@@ -32,12 +32,12 @@ const remove = (id) => {
 	return result
 }
 
-// const put = async (body, id) => {
+// const put = (body, id) => {
 // 	let result = fetch(WATCHLIST_URL + '/' + id, apiMethod('PUT', body))
 // 	return result
 // }
 
-const patch = async (body, id) => {
+const patch = (body, id) => {
 	let result = fetch(WATCHLIST_URL + '/' + id, apiMethod('PATCH', body))
 	return result
 }

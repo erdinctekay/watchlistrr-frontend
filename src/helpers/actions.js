@@ -2,15 +2,16 @@ import { watchlist, user, movie } from '@/services/backend/'
 import { useWatchlistStore } from '@/stores/WatchlistStore'
 import { useMovieStore } from '@/stores/MovieStore'
 import { useUserStore } from '@/stores/UserStore'
+import { storeToRefs } from 'pinia'
 
 export const deleteAction = async (type, item) => {
 	console.log('delete ' + type)
 	let response
 
 	try {
-		if (type === 'watchlist') {
-			const { updateWatchlistDataById } = useWatchlistStore()
+		const { updateWatchlistDataById } = useWatchlistStore()
 
+		if (type === 'watchlist') {
 			response = await watchlist.remove(item.id)
 			if (response.ok) {
 				// update store data
@@ -18,6 +19,7 @@ export const deleteAction = async (type, item) => {
 			}
 		} else {
 			const { updateMovieDataById } = useMovieStore()
+			const { routerWatchlistId } = storeToRefs(useMovieStore())
 
 			console.log(item)
 
@@ -25,6 +27,13 @@ export const deleteAction = async (type, item) => {
 			if (response.ok) {
 				// update store data
 				updateMovieDataById(item, 'delete')
+				// update watchlist data
+				const getWatchlist = await watchlist.get(routerWatchlistId.value)
+
+				if (getWatchlist.ok) {
+					const watchlistData = await getWatchlist.json()
+					updateWatchlistDataById(watchlistData)
+				}
 			}
 		}
 

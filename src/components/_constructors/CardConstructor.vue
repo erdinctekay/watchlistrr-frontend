@@ -39,7 +39,7 @@
 										:class="`${sideImageWidth}` > 0 ? 'ps-3' : ''"
 										:style="{
 											'max-width': type === 'movie' ? `calc(100% - ${sideImageWidth}px)` : `100%`,
-											/* 'max-height': 'calc(100% - 5px)', */
+											'max-height': type === 'movie' ? '150px' : 'auto',
 										}"
 									>
 										<div class="data-wrapper">
@@ -69,7 +69,7 @@
 											</p>
 											<slot name="after-title"></slot>
 										</div>
-										<div
+										<!-- <div
 											v-if="type === 'movie'"
 											class="pt-3 d-flex justify-content-start align-items-end text-muted"
 											style="padding-bottom: 3px"
@@ -79,7 +79,7 @@
 											>
 												<a>See more details </a>
 											</span>
-										</div>
+										</div> -->
 									</div>
 								</div>
 							</div>
@@ -142,12 +142,6 @@
 	})
 
 	const backdropPath = computed(() => (props.item.backdropPath ? props.item.backdropPath : props.item.posterPath))
-
-	onMounted(() => {
-		const backdropUrl = `url(https://image.tmdb.org/t/p/w500${props.item.backdropPath})`
-		const root = document.querySelector(':root')
-		root.style.setProperty('--backdrop-url', backdropUrl)
-	})
 
 	onUpdated(() => {})
 

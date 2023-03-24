@@ -3,7 +3,6 @@ import { storeToRefs } from 'pinia'
 import { useMovieStore } from '@/stores/MovieStore'
 
 const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL
-const MOVIE_URL = `${BASE_URL}/movies`
 
 const getAllByWatchlist = (sortFilter, sortOrder, page = '', limit = '', searchQuery) => {
 	const { routerWatchlistId: watchlistId } = storeToRefs(useMovieStore())
@@ -21,12 +20,28 @@ const getAllByWatchlist = (sortFilter, sortOrder, page = '', limit = '', searchQ
 	return result
 }
 
+const addToWatchlist = (body) => {
+	const { routerWatchlistId: watchlistId } = storeToRefs(useMovieStore())
+	const WATCHLIST_MOVIE_URL = `${BASE_URL}/watchlists/${watchlistId.value}/movies`
+
+	let result = fetch(WATCHLIST_MOVIE_URL, apiMethod('POST', body))
+	return result
+}
+
+const removeFromWatchlist = (id) => {
+	const { routerWatchlistId: watchlistId } = storeToRefs(useMovieStore())
+	const WATCHLIST_MOVIE_URL = `${BASE_URL}/watchlists/${watchlistId.value}/movies`
+
+	let result = fetch(WATCHLIST_MOVIE_URL + `/${id}`, apiMethod('DELETE'))
+	return result
+}
+
 // const get = (id) => {
 // 	let result = fetch(MOVIE_URL + '/' + id, apiMethod('GET'))
 // 	return result
 // }
 
-// const create = async (body) => {
+// const create = (body) => {
 // 	let result = fetch(MOVIE_URL, apiMethod('POST', body))
 // 	return result
 // }
@@ -36,16 +51,16 @@ const getAllByWatchlist = (sortFilter, sortOrder, page = '', limit = '', searchQ
 // 	return result
 // }
 
-// const update = async (body, id) => {
+// const put = (body, id) => {
 // 	let result = fetch(MOVIE_URL + '/' + id, apiMethod('PUT', body))
 // 	return result
 // }
 
-// const patch = async (body, id) => {
+// const patch = (body, id) => {
 // 	let result = fetch(MOVIE_URL + '/' + id, apiMethod('PATCH', body))
 // 	return result
 // }
 
-export { getAllByWatchlist }
+export { getAllByWatchlist, addToWatchlist, removeFromWatchlist }
 
-// export { getAllByWatchlist, get, create, remove, update, patch }
+// export { getAllByWatchlist, get, create, remove, put, patch }

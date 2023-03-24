@@ -1,8 +1,10 @@
-import { watchlist, user } from '@/services/backend/'
+import { watchlist, user, movie } from '@/services/backend/'
 import { useWatchlistStore } from '@/stores/WatchlistStore'
+import { useMovieStore } from '@/stores/MovieStore'
 import { useUserStore } from '@/stores/UserStore'
 
 export const deleteAction = async (type, item) => {
+	console.log('delete ' + type)
 	let response
 
 	try {
@@ -14,7 +16,18 @@ export const deleteAction = async (type, item) => {
 				// update store data
 				updateWatchlistDataById(item, 'delete')
 			}
+		} else {
+			const { updateMovieDataById } = useMovieStore()
+
+			console.log(item)
+
+			response = await movie.removeFromWatchlist(item.joinId)
+			if (response.ok) {
+				// update store data
+				updateMovieDataById(item, 'delete')
+			}
 		}
+
 		return response
 	} catch (error) {
 		console.log(error)
@@ -81,16 +94,20 @@ const syncInteractionsStore = async (userId, itemId, itemIdType) => {
 	await getAllInteractions(userId)
 
 	if (itemIdType === 'watchlist') {
-		const { updateWatchlistDataById } = useWatchlistStore()
+		await syncWatchlistChanges(itemId)
+	}
+}
 
-		// try full sync with db
-		const response = await watchlist.get(itemId)
-		if (response.ok) {
-			let item = await response.json()
+export const syncWatchlistChanges = async (itemId) => {
+	const { updateWatchlistDataById } = useWatchlistStore()
 
-			console.log(item)
-			// update store data
-			updateWatchlistDataById(item)
-		}
+	// try full sync with db
+	const response = await watchlist.get(itemId)
+	if (response.ok) {
+		let item = await response.json()
+
+		console.log(item)
+		// update store data
+		updateWatchlistDataById(item)
 	}
 }

@@ -2,6 +2,7 @@
 	<modal-constructor
 		:isModalShowing="isModalShowing"
 		:isDismissible="!isFormDisabled"
+		:isFormDisabled="isFormDisabled"
 		:item="item"
 		:triggerModalClose="triggerModalClose"
 	>
@@ -74,7 +75,7 @@
 		let success
 
 		try {
-			let response = await deleteAction('watchlist', props.objectToDelete)
+			let response = await deleteAction(props.type, props.objectToDelete)
 
 			success = response.ok
 			console.log('success: ' + success)

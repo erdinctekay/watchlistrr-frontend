@@ -11,7 +11,7 @@
 				style="max-height: 480px; overflow-y: auto; overflow-x: hidden"
 			>
 				<div class="row" style="min-width: 312px">
-					<div class="col-md-6">
+					<div class="col-md-6 mb-4 mb-md-0">
 						<h5 class="mb-3">Frontend</h5>
 						<p>
 							<strong>Repo:</strong><br />

@@ -15,13 +15,16 @@
 		v-if="currentModal === 'pleaseLogin'"
 		:isModalShowing="isModalShowing"
 	/>
-
-	<!-- prettier-ignore -->
 	<delete-item-modal
 		v-if="currentModal?.split('/')[0] === 'deleteItem'"
 		:isModalShowing="isModalShowing"
 		:objectToDelete="currentModalData"
 		:type="currentModal.split('/')[1]"
+	/>
+	<!-- prettier-ignore -->
+	<credits-modal
+		v-if="currentModal?.split('/')[0] === 'credits'"
+		:isModalShowing="isModalShowing"
 	/>
 </template>
 <script setup>
@@ -29,6 +32,7 @@
 	import CreateUpdateMovieModal from '@/components/modals/CreateUpdateMovieModal.vue'
 	import PleaseLoginModal from '@/components/modals/PleaseLoginModal.vue'
 	import DeleteItemModal from '@/components/modals/DeleteItemModal.vue'
+	import CreditsModal from '@/components/modals/CreditsModal.vue'
 
 	import { storeToRefs } from 'pinia'
 	import { watch } from 'vue'

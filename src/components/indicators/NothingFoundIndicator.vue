@@ -1,17 +1,20 @@
 <template>
 	<section class="col-12 my-4">
 		<div class="container-fluid container-fluid-xxl py-2 px-3 px-sm-5 row g-0 m-auto">
-			<div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 60vh">
+			<div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 50vh">
 				<h1 class="fw-bold">
-					{{ isUserPageOwner && !isActiveSearchQuery ? `HEY!` : 'OOPS!' }}
+					{{ isUserPageOwner && !isActiveSearchQuery ? userCredentials.displayName?.split(' ')[0] + '!' : 'OOPS!' }}
 				</h1>
 
-				<span v-if="isActiveSearchQuery" class="h4 mb-5"> Sorry, we couldn't find any matching records. </span>
+				<span v-if="isActiveSearchQuery" class="h4 mb-5 text-center">
+					Sorry, we couldn't find any matching records.
+				</span>
 
-				<span v-else-if="!isUserPageOwner" class="h4 mb-5">Nothing to show here.</span>
+				<span v-else-if="!isUserPageOwner" class="h4 mb-5">There's no {{ source }}s here yet... </span>
 
-				<div v-else class="mb-5 d-flex flex-column align-items-center">
-					<span class="h4"> Feeling empty without any {{ source }}s in here... </span>
+				<div v-else class="d-flex flex-column text-center mb-5">
+					<span class="h4 mb-0">It feels empty here... </span>
+
 					<span class="lead">Add your first {{ source }} to get started!</span>
 				</div>
 
@@ -26,8 +29,8 @@
 						Return Home
 					</button-constructor>
 					<button-constructor
-						v-else-if="isWatchlistPage"
-						@click="openModal('addMovie')"
+						v-else
+						@click="isWatchlistPage ? openModal('addMovie') : openModal('addWatchlist')"
 						:mainColor="'primary'"
 						:mainClass="'rounded-pill py-2 px-3'"
 						:textStyle="'font-weight:500;'"
@@ -56,10 +59,12 @@
 	import { useSortStore } from '@/stores/SortStore'
 	import { useAuthStore } from '@/stores/AuthStore'
 	import { useMovieStore } from '@/stores/MovieStore'
+	import { useWatchlistStore } from '@/stores/WatchlistStore'
 	import { useModalStore } from '@/stores/ModalStore'
 
 	const { currentPage } = storeToRefs(useRouteStore())
 	const { userCredentials, isAuthenticated } = storeToRefs(useAuthStore())
+	const { currentWatchlistsBy } = storeToRefs(useWatchlistStore())
 	const { currentWatchlist } = storeToRefs(useMovieStore())
 	const { activeSortOptions } = storeToRefs(useSortStore())
 	const { openModal } = useModalStore()
@@ -87,7 +92,7 @@
 	const isUserPageOwner = computed(() => {
 		if (!isAuthenticated.value) return false
 
-		// if (isUserWatchlistsPage.value) return currentWatchlistsBy.value?.id === userCredentials.value?.uid
+		if (isUserWatchlistsPage.value) return currentWatchlistsBy.value?.id === userCredentials.value?.uid
 		if (isWatchlistPage.value) return currentWatchlist.value?.userId === userCredentials.value?.uid
 
 		return false

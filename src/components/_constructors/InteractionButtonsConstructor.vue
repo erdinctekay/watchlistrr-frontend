@@ -22,7 +22,7 @@
 	import { reactive, watchEffect, computed } from 'vue'
 	import { storeToRefs } from 'pinia'
 
-	import { toggleInteraction } from '@/helpers/actions'
+	import { toggleInteraction, shareAction } from '@/helpers/actions'
 
 	import { useAuthStore } from '@/stores/AuthStore'
 	import { useModalStore } from '@/stores/ModalStore'
@@ -136,6 +136,13 @@
 		},
 	]
 
+	const shareButton = {
+		name: 'share',
+		mainIcon: 'share',
+		mainIconSize: '1.15rem',
+		action: () => shareAction(props.item),
+	}
+
 	// needs to be reactive to update icons and classes without using .value
 	const interactionObject = reactive({
 		value: {
@@ -154,10 +161,14 @@
 			},
 			watchlist: {
 				defaults: {},
-				items: [...watchlistInteractions],
+				items: [...watchlistInteractions, shareButton],
 			},
 		},
 	})
+
+	// if (userCredentials.value.uid !== props.item.userId) {
+	// 	interactionObject.value.watchlist.items.push(shareButton)
+	// }
 </script>
 <style>
 	[data-bs-theme='dark'] .hover-highlight-icon i.colored {

@@ -120,3 +120,97 @@ export const syncWatchlistChanges = async (itemId) => {
 		updateWatchlistDataById(item)
 	}
 }
+
+const baseUrl = window.location.origin
+
+export const shareAction = async (item) => {
+	const shareData = {
+		title: `${item.title} | Watchlistrr`,
+		text: `Look this watchlist I found at watchlistrr! — ${item.title}`,
+		url: `${baseUrl}/watchlist/${item.id}`,
+	}
+	if (navigator.share) {
+		try {
+			await navigator.share(shareData)
+		} catch (error) {
+			console.error('Error sharing:', error)
+			copyUrl(shareData.url)
+		}
+	} else {
+		copyUrl(shareData.url)
+	}
+}
+
+const copyUrl = async (url) => {
+	const textarea = document.createElement('textarea')
+	textarea.style.position = 'absolute'
+	textarea.style.left = '-9999px'
+	textarea.style.opacity = '0'
+	textarea.value = url
+	document.body.appendChild(textarea)
+	textarea.select()
+	document.execCommand('copy')
+	document.body.removeChild(textarea)
+	console.log('URL copied to clipboard')
+
+	showSuccessfulCopy()
+}
+
+/** will replace with alerts component next versions */
+const showSuccessfulCopy = () => {
+	// Create a new notification div element
+	const notification = document.createElement('div')
+	notification.classList.add(
+		'd-flex',
+		'bg-secondary',
+		'bg-opacity-75',
+		'text-gray-150',
+		'rounded-3',
+		'py-2',
+		'px-3',
+		'bg-success'
+	)
+	notification.style.minHeight = '50px'
+	notification.style.position = 'fixed'
+	notification.style.bottom = '10px'
+	notification.style.left = '50%'
+	notification.style.transform = 'translateX(-50%)'
+	notification.style.opacity = '0'
+	notification.style.transition = 'opacity 0.25s ease'
+
+	// Add the notification text
+	const notificationText = document.createElement('span')
+	notificationText.classList.add(
+		'small',
+		'fw-bold',
+		'd-flex',
+		'flex-column',
+		'col-12',
+		'align-items-center',
+		'justify-content-center'
+	)
+
+	const notificationTextInner = document.createElement('span')
+	notificationTextInner.classList.add('fw-normal', 'text-nowrap', 'fw-bold')
+	notificationTextInner.textContent = 'URL copied to clipboard'
+
+	notificationText.appendChild(notificationTextInner)
+	notification.appendChild(notificationText)
+
+	// Add the notification to the document body
+	document.body.appendChild(notification)
+
+	setTimeout(() => {
+		notification.style.opacity = '1'
+	}, 500)
+
+	// Hide the notification after 2 seconds
+	setTimeout(() => {
+		notification.style.opacity = '0'
+		notification.style.transition = 'opacity 0.65s ease-in-out'
+
+		setTimeout(() => {
+			document.body.removeChild(notification)
+		}, 500)
+	}, 1500)
+}

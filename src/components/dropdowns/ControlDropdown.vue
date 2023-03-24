@@ -25,6 +25,7 @@
 
 	import { capitalizeWords } from '@/helpers/utils'
 	import { deleteAction } from '@/helpers/actions'
+	import { shareAction } from '@/helpers/actions'
 
 	import { useModalStore } from '@/stores/ModalStore'
 	import { useUserStore } from '@/stores/UserStore'
@@ -91,14 +92,25 @@
 			mainIcon: 'trash-fill',
 			action: () => preferredDeleteAction(),
 		},
+		{
+			label: 'Share ' + props.type,
+			name: 'share',
+			mainIcon: 'share-fill',
+			mainIconSize: '1.15rem',
+			action: () => shareAction(props.item),
+		},
 	]
 
 	// movies not editable since fething from TMDB
 	if (props.type === 'movie') {
-		const editIndex = controlDropdown.findIndex((item) => item.name === 'edit')
-		if (editIndex > -1) {
-			controlDropdown.splice(editIndex, 1)
-		}
+		const itemsToRemove = ['edit', 'share']
+
+		itemsToRemove.forEach((itemName) => {
+			const itemIndex = controlDropdown.findIndex((item) => item.name === itemName)
+			if (itemIndex > -1) {
+				controlDropdown.splice(itemIndex, 1)
+			}
+		})
 	}
 
 	const dropdownObject = {

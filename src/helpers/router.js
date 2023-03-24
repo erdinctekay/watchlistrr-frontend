@@ -53,3 +53,14 @@ export const returnPage = (pageName, id) => {
 		router.push({ name: pageName })
 	}
 }
+
+export const getUrl = (pageName, id) => {
+	const route = router.resolve({
+		name: pageName,
+		params: {
+			id: id,
+		},
+	})
+
+	return route.href
+}

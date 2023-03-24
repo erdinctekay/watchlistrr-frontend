@@ -26,7 +26,7 @@
 					>
 						<div
 							class="my-3 scrollable d-flex flex-column me-n4"
-							style="max-height: 320px; min-height: 320px; overflow-y: scroll"
+							style="max-height: 320px; min-height: 320px; overflow-y: auto"
 						>
 							<div
 								v-if="!hasActiveSearch"
@@ -286,7 +286,6 @@
 		title: 'Add new movie',
 		successButton: {
 			disabled: computed(() => {
-				// will be enabled after validation feature
 				if (isFormDisabled.value || !isFormValid.value) {
 					return true
 				}

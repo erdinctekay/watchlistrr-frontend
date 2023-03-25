@@ -19,7 +19,7 @@ You can try the working app on <a href="https://watchlistrr.netlify.app/" target
 ### Short Term
 
 - Toast notifications after certain actions
-- Share handler (web share api)
+- <s>Share handler (web share api)</s> <sub>added 24.03.23</sub>
 - Account page and auth related actions (pw change, name change, forgot pw etc.)
 - Library page (that user can easily list own liked, watched movies, followed, starred watchlists)
 - Adding multiple movies / bulk add feature

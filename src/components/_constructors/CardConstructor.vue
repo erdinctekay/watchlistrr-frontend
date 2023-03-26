@@ -46,6 +46,43 @@
 											<p data-key="" class="p-0 m-0 fw-bold">
 												<span class="d-flex flex-row flex-wrap align-content-between text-body">
 													<span
+														v-if="
+															type === 'movie' &&
+															diacritic.clean(item.title).toLowerCase() !==
+																diacritic.clean(item.originalTitle).toLowerCase()
+														"
+													>
+														<span
+															style="
+																text-overflow: ellipsis;
+																overflow: hidden;
+																-webkit-line-clamp: 1;
+																display: -webkit-box;
+																-webkit-box-orient: vertical;
+																padding-bottom: 3px !important;
+															"
+															:style="{
+																width: type === 'watchlist' ? `calc(100% - ${privateWatchlistIconWidth}px)` : `100%`,
+															}"
+														>
+															{{ item.title }}
+														</span>
+														<span
+															class="small text-muted fw-normal"
+															style="
+																text-overflow: ellipsis;
+																overflow: hidden;
+																-webkit-line-clamp: 1;
+																display: -webkit-box;
+																-webkit-box-orient: vertical;
+																padding-bottom: 3px !important;
+															"
+														>
+															{{ item.originalTitle }}
+														</span>
+													</span>
+													<span
+														v-else
 														style="
 															text-overflow: ellipsis;
 															overflow: hidden;
@@ -117,6 +154,7 @@
 	import ControlDropdown from '@/components/dropdowns/ControlDropdown.vue'
 
 	import { onMounted, onUpdated, computed } from 'vue'
+	import diacritic from 'diacritic'
 
 	const props = defineProps({
 		type: {

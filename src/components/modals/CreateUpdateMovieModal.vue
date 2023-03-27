@@ -74,35 +74,15 @@
 											/>
 											<div class="ps-2 d-flex flex-row w-100 justify-content-between">
 												<div class="col-10 ps-1 pe-3 d-flex flex-column">
-													<span
-														class="fw-bold"
-														style="
-															text-overflow: ellipsis;
-															overflow: hidden;
-															-webkit-line-clamp: 2;
-															display: -webkit-box;
-															-webkit-box-orient: vertical;
-															padding-bottom: 3px !important;
-														"
-													>
+													<span class="fw-bold text-ellipsis line-clamp-2">
 														{{ item.title }}
 													</span>
-													<!-- SOME CONFLICTS HERE -->
-													<!-- !!!! control with diacritic cleaned state -->
 													<span
 														v-if="
 															diacritic.clean(item.title).toLowerCase() !==
 															diacritic.clean(item.originalTitle).toLowerCase()
 														"
-														class="small text-muted"
-														style="
-															text-overflow: ellipsis;
-															overflow: hidden;
-															-webkit-line-clamp: 2;
-															display: -webkit-box;
-															-webkit-box-orient: vertical;
-															padding-bottom: 3px !important;
-														"
+														class="small text-muted text-ellipsis line-clamp-2"
 													>
 														{{ item.originalTitle }}
 													</span>
@@ -172,10 +152,7 @@
 						{{ selectedMovies.data.length > 0 ? 'Selected:' : 'Nothing selected yet' }}</span
 					>
 					<div v-for="item in selectedMovies.data" class="d-flex flex-column col-9 ms-2">
-						<span
-							class="pe-3"
-							style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden; line-height: 1.75rem"
-						>
+						<span class="pe-3 text-ellipsis line-clamp-1">
 							{{ item.title }}
 						</span>
 						<span class="small text-muted" style="font-size: 0.75rem">

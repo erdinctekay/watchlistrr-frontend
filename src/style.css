@@ -487,6 +487,35 @@ html.modal-open {
 	overflow: hidden;
 }
 
+.text-ellipsis {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	-webkit-line-clamp: var(--line-clamp-count);
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	margin-bottom: 3px !important;
+}
+
+.line-clamp-1 {
+	--line-clamp-count: 1;
+}
+
+.line-clamp-2 {
+	--line-clamp-count: 2;
+}
+
+.line-clamp-3 {
+	--line-clamp-count: 3;
+}
+
+.line-clamp-4 {
+	--line-clamp-count: 4;
+}
+
+.line-clamp-5 {
+	--line-clamp-count: 5;
+}
+
 /* .text-opacity-100, .text-opacity-100 * {
     --bs-text-opacity: 1 !important;
 }

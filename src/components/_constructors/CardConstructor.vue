@@ -53,45 +53,21 @@
 														"
 													>
 														<span
-															style="
-																text-overflow: ellipsis;
-																overflow: hidden;
-																-webkit-line-clamp: 1;
-																display: -webkit-box;
-																-webkit-box-orient: vertical;
-																padding-bottom: 3px !important;
-															"
+															class="text-ellipsis line-clamp-1"
 															:style="{
 																width: type === 'watchlist' ? `calc(100% - ${privateWatchlistIconWidth}px)` : `100%`,
 															}"
 														>
 															{{ item.title }}
 														</span>
-														<span
-															class="small text-muted fw-normal"
-															style="
-																text-overflow: ellipsis;
-																overflow: hidden;
-																-webkit-line-clamp: 1;
-																display: -webkit-box;
-																-webkit-box-orient: vertical;
-																padding-bottom: 3px !important;
-															"
-														>
+														<span class="small text-muted fw-normal text-ellipsis line-clamp-1">
 															{{ item.originalTitle }}
 														</span>
 													</span>
 													<span
 														v-else
-														style="
-															text-overflow: ellipsis;
-															overflow: hidden;
-															-webkit-line-clamp: 2;
-															display: -webkit-box;
-															-webkit-box-orient: vertical;
-															padding-bottom: 3px !important;
-															min-height: 2.5rem;
-														"
+														class="text-ellipsis line-clamp-2"
+														style="min-height: 2.5rem"
 														:style="{
 															width: type === 'watchlist' ? `calc(100% - ${privateWatchlistIconWidth}px)` : `100%`,
 														}"

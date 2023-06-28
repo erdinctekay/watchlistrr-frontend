@@ -3,7 +3,7 @@
 The <b>watchlistrr</b> is a single page web application that allows users to create, share and subscribe watchlists. 
 <br><sub>The watchlistrr app uses the <b>TMDB API</b> (on <a href="https://github.com/erdinctekay/watchlistrr-fake-backend" target="_blank">backend</a>) to retrieve information about movies and TV shows.</sub>
 
-You can try the working app on <a href="https://watchlistrr.netlify.app/" target="_blank"><b>watchlistrr.netlify.app</b></a>
+You can try the working app on <a href="https://watchlistrr.com/" target="_blank"><b>watchlistrr.com</b></a>
 
 ## Features
 

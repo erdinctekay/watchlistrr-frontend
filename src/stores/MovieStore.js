@@ -14,8 +14,10 @@ export const useMovieStore = defineStore('movie', () => {
 	const page = ref(0)
 	const limit = 12
 	const queryOptions = reactive({
-		sortFilter: computed(() => activeSortOptions.sortFilterMovie?.split(' ')[0]),
-		sortOrder: computed(() => activeSortOptions.sortFilterMovie?.split(' ')[1]),
+		sort: {
+			sortFilter: computed(() => activeSortOptions.sortFilterMovie?.split(' ')[0]),
+			sortOrder: computed(() => activeSortOptions.sortFilterMovie?.split(' ')[1]),
+		},
 		searchQuery: computed(() => activeSortOptions.searchQuery.movie),
 	})
 	const lastPage = ref(null)
@@ -64,7 +66,7 @@ export const useMovieStore = defineStore('movie', () => {
 			page.value++
 
 			// prettier-ignore
-			const response = await movie.getAllByWatchlist(queryOptions.sortFilter, queryOptions.sortOrder, page.value, limit, queryOptions.searchQuery.value)
+			const response = await movie.getAllByWatchlist(queryOptions.sort.sortFilter, queryOptions.sort.sortOrder, page.value, limit, queryOptions.searchQuery.value)
 			lastPage.value = Math.ceil(response.headers.get('x-total-count') / limit)
 
 			const success = response.ok
